@@ -1055,7 +1055,12 @@ the staged copy for the substance of each suggested improvement and
 classify it as already-applied / partially-applied / outstanding — an
 `open` status is not evidence the work is outstanding, and applying an
 already-applied observation over a section that has since been refined
-regresses the skill in the name of improving it. Classify against the
+regresses the skill in the name of improving it. The classification is
+made per point of the body, naming the line that covers each: an entry
+is already-applied only when every point has its line, and one point
+without a line makes it partially-applied, whatever the title suggests;
+a point that joins several conditions (A and B) counts as one point per
+condition (SKILL.md, Acting on Observations). Classify against the
 **Issue** as well as the suggestion: `already-applied` needs both — the
 suggestion's substance is present AND the failure the Issue describes
 can no longer occur. Where the suggestion is present but the failure
@@ -1075,7 +1080,11 @@ the section alone. A `partially-applied` entry names the remainder in
 `resolution:` ("suggestion applied; issue still open: <what can still
 happen>") and logs that remainder as its own observation in the same
 turn — the carrier pattern in `observation-log.md` — so it stays in the
-queue after this one archives. Then
+queue after this one archives. When this run applies the remainder
+itself, it adds only the points without a line, never restates the ones
+that have one — a second copy of a present rule drifts from the first —
+and names both in the resolution: the points a prior session applied and
+the ones added now. Then
 produce an updated SKILL.md: integrate insights into the sections where
 they belong (never append an observations list at the bottom); preserve
 structure, voice, and attribution; place new rules where they logically

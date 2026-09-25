@@ -1059,6 +1059,19 @@ The same holds for a hand-maintained ledger or manifest read to judge an
 artefact against it — excerpt to find an entry, full text to judge one
 (`weekly-review.md`, "Staged-work reconciliation gate").
 
+**A change you did not make resolves an observation point by point,
+never title against title.** When an upstream release, a sibling
+session's edit or a fix that arrived by merge appears to cover an
+observation, list the points its body makes and name, for each, the
+line of the diff that covers it; a point with no line stays open and
+moves to a carrier observation (the carrier pattern, below). A point
+that joins several conditions (A and B) counts as one point per
+condition — a line that matches the second half does not cover the
+first. Holding the fix's title against the observation's title measures
+the overlap of two headings, not coverage of the content, and the
+uncovered remainder leaves every queue, because the entry is marked
+resolved.
+
 ## Editing an existing observation
 
 Status changes and archival touch exactly one file. Re-read that file
