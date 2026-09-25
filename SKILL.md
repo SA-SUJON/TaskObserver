@@ -587,9 +587,9 @@ own frontmatter: `status: actioned`, `declined` or `superseded` AND a
 day, whichever session resolved them — the grace period lives in the file,
 never in session memory. A resolved file with no readable `resolved:` date
 gets today's date written to that field instead of being archived (the
-snippet skips it; make that one-field edit separately). One
-file per `mv`; no rewrite of anything else. Helper and rationale:
-`references/observation-log.md`.
+snippet skips it; make that one-field edit separately). One file per
+`mv`, no rewrite of anything else, and a bulk move outside the sweep is
+verified by conservation: `references/observation-log.md` ("Archival").
 
 ## Surfacing Protocol
 

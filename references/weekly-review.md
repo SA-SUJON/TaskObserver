@@ -339,7 +339,10 @@ re-suggest the block; record the tiers found in
 baseline to compare against — in an aggregate run over several logs,
 one such file per participating workspace, describing that workspace's
 own config, never a single copy at the anchor workspace. Then archive observation files resolved in
-*previous* sessions (see Archival on Write in SKILL.md). Read only the frontmatter of
+*previous* sessions — with the sweep as shipped (the sweep block of the id
+snippet, run on its own; see Archival on Write in SKILL.md), never an
+improvised bulk move; where one is unavoidable, read the set once and
+verify by conservation (`observation-log.md`, Archival). Read only the frontmatter of
 each file in `observation-log/` — not the bodies — to build the work queue;
 load a body only when you actually action that observation in Step 5. This
 frontmatter-first pass is what keeps the review cheap as the backlog grows.

@@ -1133,8 +1133,47 @@ condition (`weekly-review.md`, Step 1). It archives only once it is actually
 actioned, declined or superseded.
 
 Archival is a set of plain `mv` operations, one file at a time. Moving one
-resolved file cannot affect any other observation. Compare a `resolved:`
-date to today portably (ISO dates sort lexically):
+resolved file cannot affect any other observation. The safe form is the
+sweep as shipped — one `find -print0` enumeration drives the loop, and the
+loop opens and moves only the path it was just handed; a moved file lands
+in `archive/`, which `-maxdepth 1` never descends into. To archive without
+writing an observation (the review's Step 1), run that sweep block on its
+own, from `today=` through the `ARCHIVAL SWEEP BROKEN` guard. Do not
+improvise a bulk move; where one is unavoidable, two rules:
+
+**Read the set once.** Either a single enumeration drives the moves, as
+the sweep does, or the full candidate list is written to a file or a
+variable before the first `mv`. Never run a second read of the directory
+— a `grep` over its files, a separate glob expansion, a listing — while
+the move is in progress: whether that reader hits files the mover has
+already moved depends on which stage is ahead, and its "No such file or
+directory" errors have the same shape as data loss. (Observed: a pipeline
+whose reading stage and moving stage ran concurrently produced dozens of
+such errors; no file was lost, and telling that apart afterwards cost
+more than writing the list first would have.)
+
+**Verify a bulk move by conservation**, not by an existence probe: the
+total across `observation-log/` and `archive/` is unchanged by a move.
+`ls` with several arguments aggregates its exit code — it exits non-zero
+if ANY argument is missing, and after a move the active copies are
+missing by design — so "each file exists in active OR archive" tested
+with one `ls` reports every file missing. If an existence probe is
+needed, make one call per path.
+
+```bash
+d="[ABSOLUTE PATH]/skill-observations/observation-log"
+total() { echo $(( $(find "$d" -maxdepth 1 -name '*.md' | wc -l) + $(find "$d/archive" -maxdepth 1 -name '*.md' | wc -l) )); }
+before=$(total)
+# ... the moves ...
+after=$(total)
+if [ "$before" -ne "$after" ]; then echo "ARCHIVAL CONSERVATION BROKEN: $before -> $after"; exit 1; fi
+```
+
+Reading a set and changing it belong in one enumeration or in two
+strictly ordered steps, never in two concurrent ones; and a check after a
+bulk operation rests on an invariant, because a probe with an aggregated
+exit code answers "missing" to a question nobody asked it. Compare a
+`resolved:` date to today portably (ISO dates sort lexically):
 
 ```bash
 older_than_today() {   # $1 = a YYYY-MM-DD date
