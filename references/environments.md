@@ -241,8 +241,13 @@ agent's equivalent — for an existing `skill-observations/` workspace. If
 one exists, adopt it, or consolidate deliberately with the user. A fresh
 empty log beside a populated one is a silent fork: both grow
 independently, ids collide, and each session sees only half the history.
-When consolidating, leave a pointer file at the abandoned location so
-sessions anchored there get redirected instead of re-creating the fork.
+Consolidating a shard is mechanical: carry over only the entries still
+`open` — its already-actioned entries re-import as duplicates of work
+the target may hold too — re-issue each id from the target log's own
+counter (the snippet, one write at a time, never a pre-computed range),
+mark each source entry `actioned` with a resolution naming the target
+id, and then leave a pointer file at the abandoned location so sessions
+anchored there get redirected instead of re-creating the fork.
 
 **Report-back mode — when no pinned path resolves.** The Session Start
 guard warns and re-anchors when the resolved workspace sits under an
