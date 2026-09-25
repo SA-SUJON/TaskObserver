@@ -195,6 +195,17 @@ The same applies to any vehicle standing in for a result: a ticket
 resolved, a build green, a message replied to. Park on what you actually
 need to be true.
 
+For a skill the user does not maintain, the target artefact is the LOCAL
+INSTALL, not the upstream tree. An upstream report is not resolved when it
+is accepted, merged or released — none of those changes the copy that is
+running — and nothing observes a re-install. So the entry stays `parked`
+on a condition read from the installed copy ("the installed `task-observer`
+carries rule X", or names the version that carries it), and is resolved
+when that copy carries the fix. (Observed: an install pinned nineteen days
+behind upstream had four of its own reports fixed and released in that
+window, and the sessions that read the release notes were still running
+the old text — one of them hit a defect the same release had fixed.)
+
 ### Context preservation — the `reference:` field
 
 **Context preservation:** if an observation depends on session-local data
