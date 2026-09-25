@@ -2,9 +2,9 @@
 
 ## The meta-skill that builds and improves all your skills, including itself.
 
-This meta-skill has **logged over 1,500 observations across my 82 skills**, most of which were turned into skill improvements. The majority of my 82 skills were themselves created based on observations by the meta-skill.
+This meta-skill has **logged over 1,600 observations across my 81 skills**, most of which were turned into skill improvements. The majority of my 81 skills were themselves created based on observations by the meta-skill.
 
-The current version of task-observer also includes improvements suggested by 65 different users, across 141 issues and 33 pull requests. Without these contributions, the project wouldn't be half as good as it is today.
+The current version of task-observer also includes improvements from 69 different contributors, each credited as an author or co-author in the commit history, and its commits close 99 issues and pull requests. Without these contributions, the project wouldn't be half as good as it is today.
 
 This meta-skill is a practical application of the [Augmented Expertise](https://www.rebelytics.com/augmented-expertise/) methodology, an AI framework for knowledge workers. However, users have reported successful integrations into their Hermes and Openclaw setups, so it works equally well with autonomous agents.
 
