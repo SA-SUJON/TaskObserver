@@ -516,7 +516,10 @@ read-only script call is denied even though nothing is written; and a
 same guard when that body is written through a shell. Neither is a
 permission problem with the destination. Where this bites, invoke the
 script with an absolute path and no `cd`, and write observation bodies with
-the editing tool rather than through a shell.
+the editing tool rather than through a shell. A guard that refuses the
+session-start scan itself is handled the same way — degrade to flat
+commands, never skip the step (`observation-log.md`, "A refused snippet is
+a degraded path, never a skipped step").
 
 **Staging a harness configuration change is not like staging a skill.** A
 skill's `SKILL.md` is read by itself; a corrupted staged copy fails to parse

@@ -25,6 +25,7 @@ empty.
   - An empty scan over a non-empty log is a broken command
   - A refused print is not an empty log
   - Every instrument gets the same guard
+  - A refused snippet is a degraded path, never a skipped step
 - Skill families and the sibling check
 - Assigning an id
   - Shell portability of the id snippet — why the case patterns are parenthesised
@@ -443,6 +444,37 @@ The general form belongs with the instrument guard below: *the instrument
 was not permitted to run* is a third state beside *it ran and found nothing*
 and *it ran and broke*. All three produce an empty result, and only the
 middle one is a fact about the world.
+
+### A refused snippet is a degraded path, never a skipped step
+
+The refusal above is of the print alone; a harness that vets command
+*shape* can refuse the whole block. A policy layer that classifies
+commands rather than executing them declines a multi-line compound — a
+`for` with an embedded `awk`, a command substitution wrapping a brace
+group and a pipe — as unverifiable: it cannot be matched against an
+allowlist, so it never runs. Two failure shapes follow, and neither is
+visible afterwards: the agent rewrites the snippet into a subtler
+compound, is refused again, and gives up; or it concludes the protocol
+is unavailable in this environment and proceeds with the user's task,
+having activated nothing. A skipped protocol leaves exactly the artefact
+a protocol that found nothing leaves.
+
+**The snippet is one implementation of the step; the STEP is the
+requirement.** When the harness declines a command as unverifiable, do
+not rewrite it into a cleverer compound — the refusal is about shape, and
+a cleverer compound is the same shape. Degrade to flat, single-purpose
+commands over the absolute path, one per call, and do the combining
+yourself: list the directory and the archive, extract the frontmatter
+fields with one `grep`, read `.id-floor`, and take the maximum by hand
+where a maximum is needed. The guard still applies — a non-empty listing
+with no ids extracted is a broken read, not an empty log — and the
+`checkpoints.log` line is still written. State in the session which form
+ran, so a later reader can tell a degraded run from a skipped one. For a
+write, the flat form already exists: `scripts/new-observation.sh`,
+invoked by absolute path, is one command with no shell operators, and it
+is the only write path wherever it can run. Every mandatory step that
+ships a command owns a sentence saying what remains mandatory when the
+command is unavailable; this is that sentence for the scan.
 
 ## Skill families and the sibling check
 
