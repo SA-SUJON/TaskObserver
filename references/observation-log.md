@@ -1197,7 +1197,9 @@ condition, and whether that party has a reason to do exactly the opposite
 (sometimes as the intended effect of the very thing the entry is waiting to
 observe). If the condition cannot occur, the entry is not waiting: close it on
 the substitute evidence available today, or park it on a trigger that can
-actually fire.
+actually fire — phrased on the result in the target, never on the state
+of a vehicle ("A park condition names the result, never your own
+vehicle", above).
 
 ## Partially actioning a multi-skill observation — the carrier pattern
 
