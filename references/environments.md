@@ -796,7 +796,9 @@ READING — the live file is what the loader loads — but the WRITE-BACK
 path is the manager's source. The weekly review's staged-work
 reconciliation (`diff -rq` staged vs live) is the check that catches a
 reverted install: run it at the session after any install on a managed
-directory.
+directory. Where the entry is a symlink, resolve it before staging as
+well (`skill-authoring.md`, editing rule 1): a link copied as a link
+makes the staged path the live one.
 
 ## Git as an optional staging medium
 

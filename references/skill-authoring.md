@@ -657,7 +657,21 @@ re-check exists, do not record the value — record how to obtain it.
    safe, and the way to make it hold where no guard exists is to begin
    every edit with the copy (`mkdir -p` the staging dir, `cp` the live
    file in, `diff -q` to prove it matches), so the live path is never the
-   one in hand. Scope and precedence: staging-only governs every context
+   one in hand. **Resolve the live path before copying** (`readlink -f`,
+   or `cd` into it and `pwd -P`) and prove the staged file is a distinct
+   file, not only an equal one. Where the skills entry is a symlink into
+   a checkout — a common dotfiles layout — `cp -R` of the entry copies the
+   link, the staged path becomes a second name for the live directory,
+   every "staged" edit lands in the live skill, and `diff -rq` passes
+   because it compares content through whatever both paths resolve to:
+   it verifies the copy is faithful, never that it is a copy. A proving
+   step that reports success exactly when staging has silently become
+   editing in place is worse than none. So after the copy: the staged
+   path is not itself a link (`[ ! -L "$s" ]`), and its `SKILL.md` has a
+   different inode from live's (`stat -c %i` on GNU, `stat -f %i` on
+   macOS) — refuse to edit when they match. The manifest's install
+   instructions name the resolved real path, since that is the file the
+   user must overwrite. Scope and precedence: staging-only governs every context
    and every size of change. The direct-apply clause in SKILL.md ("Acting
    on Observations") decides *when* a small change is made — now, rather
    than at the next review — never *where*; it does not license an
