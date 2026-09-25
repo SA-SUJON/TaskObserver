@@ -135,6 +135,13 @@ into this state announces itself at session start rather than at the review
 that trips over it. Re-verify by running a real YAML parse over the
 frontmatter of every file, not by re-reading the template.
 
+The typographic quote is the other common break, and it is quieter. A
+value that opens with „ or “ is a plain scalar: the quote characters
+become part of the text, an unquoted `: ` inside it still breaks the
+file, and nothing looks wrong in an editor. A value that opens with an
+ASCII `"` and closes with a typographic one never closes. Quote with the
+ASCII pair; for a quotation inside the value use »…« or `\"`.
+
 ### A list entry holding a colon is not portable
 
 The frontmatter names no single parser, so "valid" means: loads under

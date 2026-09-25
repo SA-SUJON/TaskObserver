@@ -509,7 +509,7 @@ parked_until:           # MANDATORY when status is parked, empty otherwise:
                         #   one line naming the condition that unparks it
 resolved:               # date resolved; leave empty while OPEN
 resolution:             # what was done — set only when actioned/declined
-reference:              # optional: path to saved session-local evidence
+reference:              # optional — path to saved session-local evidence
 ---
 
 **Issue:** [What happened — specific enough to understand weeks later
