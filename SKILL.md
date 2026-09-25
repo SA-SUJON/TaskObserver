@@ -252,13 +252,13 @@ was handled without its reference loaded, log an observation.
    classification and its cases are in `references/weekly-review.md`
    ("Staged-work reconciliation gate") — load it before judging any entry.
    Then say "N staged updates awaiting review" in one line.
-7. **First run.** If the log is empty and the project has history (handover
-   or decision docs, commit history, test scripts, an existing CLAUDE.md —
-   largely a record of corrections nobody logged), offer a one-off backfill
-   pass over those artefacts. Backfilled entries cite the durable artefact
-   (file and section) in `session_context` instead of a session, and one
-   batched write satisfies the same-turn rule. One-off; the scheduled
-   review takes over afterwards.
+7. **First run, or a named past session.** If the log is empty and the
+   project has history (handover or decision docs, commit history, test
+   scripts, a notes or memory directory, an existing CLAUDE.md), offer a
+   one-off backfill pass over those artefacts; when the user names a
+   finished session, run the same pass scoped to it. Entries cite the
+   durable artefact (file and section) in `session_context`, never a
+   session. Procedure: `references/environments.md` ("First-run backfill").
 
 ## When to Observe
 

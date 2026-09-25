@@ -809,7 +809,29 @@ hard-won discipline densely), and existing agent-instruction files, which
 are largely a record of corrections the user already had to make. One
 such pass over seven weeks of history produced twenty-three actionable
 observations, eleven of them factual corrections to an existing skill.
-Backfilled entries cite the durable artefact; the pass runs once.
+Backfilled entries cite the durable artefact, and one batched write
+satisfies the same-turn rule; the pass runs once, and the scheduled
+review takes over afterwards.
+
+**The same pass, scoped to one named session.** "Review today's session
+retrospectively" and "the one where we did X" name a finished session,
+not the project's history, and the session that hears the request holds
+no transcript of it. That is not a live observation and not a first-run
+backfill; it is the backfill pass with its sources bounded to one
+timeframe. The sources are whatever durable per-session record the
+project keeps — the kinds above are examples, not the list: commit
+history and diffs within the session's window, a memory or notes system
+the project already maintains across sessions (a directory of dated
+files indexed apart from the instructions file is common), handover docs
+written at its end. Each is cited in `session_context` exactly as a
+backfilled entry cites CLAUDE.md — the artefact and the section, never a
+session id, because there is no session to point at. Say which sources
+were read and which were unavailable, so a later reader can tell a thin
+session from a thin record. (Observed: a fresh install, the log empty,
+the user asking for a retrospective of that day; the agent rebuilt the
+day from `git log` and the project's notes directory and logged three
+evidenced observations — the right move, improvised because nothing said
+where to look.)
 
 ## Storage regimes
 
