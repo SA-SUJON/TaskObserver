@@ -416,6 +416,25 @@ legitimately moves on, so a bare "differs" is not a verdict:
   escalated as a decision (install it, or discard it and re-open its
   observations) rather than carried forward a third time.
 
+**(b) against (c) is decided per differing hunk, never per file.**
+`diff -rq` settles only (a). For every line present only in the staged
+copy, ask whether live *supersedes* it — carries a line that contains
+it, or evidently replaces it — or *lacks* it: every such line
+superseded → (b); any one genuinely absent → (c). The file-level test
+that reads naturally, "any staged-only line means (c)", misclassifies
+every superseded copy, because a modified line appears on both sides of
+a diff — and it errs in the harmful direction, since (c) is the branch
+that makes the staged copy the base for the next staging, so the next
+edit silently reverts what live gained since (observed: a copy staged
+in the morning, installed, and superseded by a second same-day staging
+was classified (c) on a file-level test; per hunk, both staged-only
+lines had been replaced by supersets in live). The same-day second
+staging under Delivery is where this arises — that rule says where the
+second copy is written, this one says how the first is then classified.
+A procedure that mandates an N-way classification owes the reader the
+discriminating test, not only the N labels; left to invent one, each
+implementer separates the first case and merges the rest.
+
 Reconcile in BOTH directions every time: lingering-done (installed but
 still listed) and missing-done (staged but never installed) fail
 differently, and only the diff sees both. Completion of a manual batch is
