@@ -22,6 +22,7 @@ empty.
 - Scanning cheaply
   - Why the session-start scan does not satisfy the per-skill check
   - An empty scan over a non-empty log is a broken command
+  - A refused print is not an empty log
   - Every instrument gets the same guard
 - Skill families and the sibling check
 - Assigning an id
@@ -286,6 +287,15 @@ a literal path, and halt on the disagreement. A guard enumerated per
 snippet is unguarded for the next snippet by construction; a guard stated
 as a property of instruments covers the one nobody has written yet.
 
+**Three states, one empty result.** An instrument that *ran and found
+nothing*, one that *ran and broke*, and one that *was never permitted to
+run* all return the same thing, and only the first is a fact about the
+world. The third is the one with no natural tell: nothing is broken, so no
+`BROKEN` guard fires, and the refusal message is easy to summarise away as
+"nothing found". Where a command can be refused by a policy layer above the
+shell — see "A refused print is not an empty log" — the guard covers the
+refusal too, and the refusal is reported in its own words.
+
 **The guard is scoped by what a command IS, not by what it looks like.**
 Both named instances above — `SCAN COMMAND BROKEN`, `ID COMMAND BROKEN` —
 are log-reading snippets shipped inside this skill, so the rule reads, in
@@ -306,6 +316,43 @@ Neither command was a "log instrument", so neither attracted the guard.
 Apply it to **any command whose empty or zero output is about to become a
 claim**: pair it with a second probe by different means, or state the
 result as "the probe returned nothing" rather than "there is nothing".
+
+### A refused print is not an empty log
+
+The session-start scan does two different jobs in one block, and they have
+different appetites. Everything up to and including the `checkpoints.log`
+write asks only for *facts about* the files: how many exist, how many have a
+parseable header, how many carry a suspect value. The trailing loop asks for
+the **contents** — it reads instruction-shaped text out of files and puts it
+into the agent's context, which is what builds awareness of the backlog.
+
+That second half is subject to whatever governs context, not only to
+whatever governs the filesystem. Under a permission mode with an automated
+content classifier it can be refused outright — reported in the field as
+`Instruction Poisoning`, on a command that had run without objection minutes
+earlier against an empty directory. The property is inherent to the step, so
+it does not go away with rewording, and it gets **more** likely as the log
+grows, not less.
+
+This is why the counts and the trace run first. Three consequences:
+
+- **A refusal is not an empty log, and is never reported as one.** The
+  improvisation the situation invites — "the scan found nothing" — is the
+  exact failure the log is meant to prevent. Say that the print was refused,
+  name the reason the classifier gave, and give the counts.
+- **The counts-only form is the documented fallback**, not a degraded
+  improvisation. It still satisfies the `SCAN COMMAND BROKEN` guard, because
+  `n` and `parsed` both come from the half that ran. Ordering the block the
+  other way round would put the guard's own inputs downstream of the half
+  that can be refused — the guard would go quiet exactly when it is needed.
+- **Awareness is genuinely reduced, and that is worth one line to the user.**
+  The session proceeds without the backlog in context; it is not equivalent
+  to a scan that ran.
+
+The general form belongs with the instrument guard below: *the instrument
+was not permitted to run* is a third state beside *it ran and found nothing*
+and *it ran and broke*. All three produce an empty result, and only the
+middle one is a fact about the world.
 
 ## Skill families and the sibling check
 

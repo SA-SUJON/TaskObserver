@@ -184,12 +184,6 @@ was handled without its reference loaded, log an observation.
    suspect=$(find "$d" -maxdepth 1 -name '*.md' -exec awk 'FNR==1 && /^---[[:space:]]*$/ {fm=1; next}
      fm && /^---[[:space:]]*$/ {fm=0; nextfile}
      fm && /^[a-z_]+: [^"\047[|>].*: / {print FILENAME; nextfile}' {} + | wc -l | tr -d ' ')   # values with an unquoted ": " — invalid YAML
-   find "$d" -maxdepth 1 -name '*.md' | LC_ALL=C sort | while IFS= read -r f; do  # quote + IFS=: never word-split a path containing a space
-     awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
-          fm && /^---[[:space:]]*$/ {exit}
-          fm' "$f"
-     printf -- '---\n'
-   done
    if [ "$n" -gt 0 ] && [ "$parsed" -eq 0 ]; then
      echo "SCAN COMMAND BROKEN — $n files present, 0 headers parsed"; exit 1
    fi
@@ -197,13 +191,20 @@ was handled without its reference loaded, log an observation.
    printf 'files: %s  parsed: %s  suspect: %s\n' "$n" "$parsed" "$suspect"
    printf '%s [%s] session-start scan: files=%s parsed=%s\n' "$(date '+%F %H:%M')" "${PWD##*/}" "$n" "$parsed" \
      >> "[ABSOLUTE PATH]/skill-observations/checkpoints.log"   # date+time+source: one line per session, not per day
+   find "$d" -maxdepth 1 -name '*.md' | LC_ALL=C sort | while IFS= read -r f; do  # LAST: content print, the only half a classifier can refuse
+     awk 'NR==1 && /^---[[:space:]]*$/ {fm=1; next}
+          fm && /^---[[:space:]]*$/ {exit}
+          fm' "$f"
+     printf -- '---\n'
+   done
    ```
 
-   **The scan ends in a write, not only a print** — the appended
-   `checkpoints.log` line is the protocol's own trace (in a priced-write
-   workspace, fold it into the session's first write instead). Load
-   `references/observation-log.md` ("The scan ends in a write, not only a
-   print") before removing, moving or replacing that line.
+   **Counts and trace first; the content print last, because only it can be
+   refused.** A refused print is not an empty log and is never reported as
+   one — the counts and the `checkpoints.log` trace above it are the
+   fallback and still satisfy the BROKEN guard. Load
+   `references/observation-log.md` ("A refused print is not an empty log")
+   before removing, moving or replacing either half.
 3. **Review trigger.** Read `skill-observations/last-review-date.txt`. The
    value carries the truth: a date = when the last review actually ran;
    `never` = no review has run yet. A missing file is abnormal (step 1
