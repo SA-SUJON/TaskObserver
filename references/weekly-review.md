@@ -493,7 +493,7 @@ of three categories:
 | Category | Detection | Action |
 |---|---|---|
 | (a) User-owned, no upstream | in the user's skills directory; not a git checkout; not refreshed from anywhere | normal staging flow |
-| (b) Writable but volatile | path contains a plugin cache or version-pinned directory; or the skill is refreshed from an upstream by clone/copy or `git pull` | never edit in place — the next update silently discards it, and no permission error ever fires |
+| (b) Writable but volatile, or foreign-maintained | path contains a plugin cache or version-pinned directory; or the skill is refreshed from an upstream by clone/copy or `git pull`; or **the file's own content declares a maintainer other than the user** — an attribution block naming another author, a canonical repository the user does not commit to, a `source:`/`upstream:` frontmatter field — wherever it is installed and however it got there, a hand-copied and hand-updated file included | never edit in place — the next update silently discards it, and no permission error ever fires; for a declared upstream, the route is the upstream report |
 | (c) No on-disk file, or read-only | built-in / harness-provided skills (e.g. docx, pdf, xlsx, pptx, skill-creator); a mount that rejects writes | cannot be edited |
 
 Observations targeting (b) or (c) are NOT skipped — the destination must
@@ -503,11 +503,25 @@ holding only the delta **plus** a routing entry in the user's instruction
 file (state plainly that without the routing entry nothing ever loads the
 companion — a fix routed somewhere nothing loads is not a fix); or routing
 the content straight into the instruction file, which loads
-unconditionally. For (b) with an upstream, also offer an upstream issue or
-PR per the attribution block. Choosing the companion route may mean
+unconditionally. For (b) with a declared upstream, the default route is
+an upstream issue or PR per the attribution block — the feedback
+pre-flight in `references/skill-authoring.md` runs at Step 5 — with a
+`{skill}-extras` companion only for a delta specific to this install
+that upstream would not take; editing the file in place is not on the
+menu, however writable it is. Provenance is a property of the artefact
+and is stated in its first lines; install location is a fact about this
+machine and says nothing about who maintains the file, so read the block
+before the path (observed: a hand-installed, hand-updated copy of this
+very skill, byte-identical to its published HEAD, met every clause of
+(a) literally, and a review staged ten observations' worth of local
+edits to it — the correct output was upstream reports and no local
+edit). This skill is the standing example: wherever the user is not its
+maintainer, `task-observer` is (b). Choosing the companion route may mean
 creating the `{skill}-extras` skill in this review, which the Constraints
 allow as the one exception to "no new skills in a review". Grow the (c) list when an update fails for
-permissions; grow the (b) list when a change you made has vanished.
+permissions; grow the (b) list when a change you made has vanished — a
+rule that fires after the damage, so it is the backstop for the
+attribution read, never the test.
 
 **Step 3 — cross-check observations.** Evaluate every OPEN observation
 against every skill — not just the skills named in its `skill:` list;
