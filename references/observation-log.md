@@ -678,6 +678,28 @@ cheap tests decide the verdict:
   signal and needs a mechanism that notices it — treat it as an automatic
   multi-skill flag rather than a stylistic aside.
 
+**An absence claim inherits the scope of the search that produced it.**
+The installed names a session can see are the user scope plus the
+project it runs in. A skill scoped to another project, and the generator
+source a project copy is rendered from (a tool-owned directory rendered
+into `.claude/skills/`), are invisible from here, so "no installed skill
+covers this" is a blind spot of the observer until those scopes have
+been searched — and the failure only runs one way: a narrow scope never
+invents a skill, it only misses real ones, which is the costly outcome
+(observed: four observations filed as a new-skill proposal for a
+workflow that an existing skill in two other repositories already
+covered, two of them already applied there). Before writing
+`proposes_skill:`, a `none` in `siblings_checked:`, or a target as
+missing, search the other scopes by the problem as well as by the name —
+a proposal is named after the task that surfaced it, and the skill that
+already solves it rarely shares the name — and record in
+`siblings_checked:` which scopes were searched. "Not found" is a finding
+only together with where you looked, exactly as Session Start step 6
+says of targets. Enumerate the scopes by glob rather than a recursive
+`find`, which over a projects root full of worktrees and dependency
+trees runs for minutes, and guard the enumeration: an empty result tells
+you about the instrument before it tells you about the library.
+
 **3. Record the verdict** in `siblings_checked:`. The field exists because
 the two states of a one-entry `skill:` list — siblings evaluated and
 correctly excluded, versus siblings never considered — are byte-identical,

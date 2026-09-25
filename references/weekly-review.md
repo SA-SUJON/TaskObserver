@@ -621,6 +621,15 @@ more than one. Then, before anything is presented:
   alike, because each is named after the task that surfaced it; eleven
   working names have collapsed to four skills on reading. Present merged
   clusters with their constituent observation ids.
+- **Existence check before any new-skill cluster is presented.** A
+  `proposes_skill:` or a `siblings_checked: none` is an absence claim
+  scoped to the session that wrote it. Search the scopes that session
+  could not see — other projects' `.claude/skills/` and the generator
+  sources they are rendered from — by the problem terms in the bodies,
+  not only the proposed name, and run the presence check above against
+  any skill found: an observation proposing a skill that already exists
+  elsewhere is an improvement to that skill, and may already be applied
+  there.
 - **Supersession check.** Where a later observation's finding is that an
   earlier one's mitigation does not work, mark the earlier one
   `status: superseded`, `resolution: "by #N"`, and carry only the later
