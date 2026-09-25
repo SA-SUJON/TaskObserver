@@ -8,8 +8,10 @@ input. Two modes:
   Mon/Wed/Fri mornings) via the platform's scheduler. Runs without the user
   present and applies non-escalated observations autonomously.
 - **In-session 7-day fallback:** pending at session start when BOTH are
-  true: no scheduled review is registered (or none succeeded in 7+ days),
-  AND `skill-observations/last-review-date.txt` contains `never` or a date
+  true: no scheduled review is registered (or none has written
+  `last-review-date.txt` in 7+ days — a scheduler's "succeeded" says the
+  job launched, never that the review ran), AND
+  `skill-observations/last-review-date.txt` contains `never` or a date
   7 or more days old — the same boundary SKILL.md step 3 uses, stated the
   same way on purpose: at exactly seven days the two files must agree, or
   whether a review runs depends on which one the session consulted
@@ -81,7 +83,16 @@ sessions inherit it without rediscovery. A permission failure mid-run —
 after the probe has succeeded — is handled the same way: skip the gated
 step, record it as a manual
 follow-up, and still emit the final report — a blocked step N must never
-cost the report for steps 1 through N-1.
+cost the report for steps 1 through N-1. None of this covers a run that
+stops before Step 1: a session that goes idle after its first call
+writes no timestamp, stages nothing, emits no summary, and the scheduler
+records it as "succeeded" — its honest answer to the wrong question,
+since a scheduler reports whether it launched the job, never whether the
+job did its work. The review's completion signal is its own artefact,
+the Step 7 timestamp; a scheduler's run status is evidence about the
+scheduler only, and the consumer of a schedule compares the artefact's
+date against the scheduler's last-run date rather than trusting either
+alone.
 
 **Several observation logs on one machine — unify the review at the
 integration point.** First check whether the logs should coexist at all:
@@ -268,7 +279,12 @@ or `schtasks /Query` from any Windows shell; the app's Scheduled tasks
 page in Cowork); if found, check that it covers **this** workspace before
 skipping: compare the workspace the task was registered for (recorded in
 `scheduler-registered.txt`, or read from the task definition) with the
-`[workspace folder]` this session resolved. Same path → skip, as before.
+`[workspace folder]` this session resolved. Same path → check its last
+run as well, where the scheduler reports one: a last-run date later than
+`last-review-date.txt` is a run that fired and completed no review. Say
+so in one line — "fired YYYY-MM-DD, no review recorded" — as a scheduler
+defect, never as a review that happened, and do **not** skip: the
+fallback stays armed. Same path and no such run → skip, as before.
 Different path, or the task's workspace cannot be determined → do **not**
 skip. A registered scheduler that reads another workspace is not coverage
 for this one; it is the fork reporting itself healthy. Say so in one line,
