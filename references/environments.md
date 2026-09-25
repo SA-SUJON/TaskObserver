@@ -17,6 +17,7 @@ in an environment without filesystem access.
   - If CLAUDE.md (or the equivalent config) is governance-protected
   - A third denial class: an automated content classifier
   - A delegated setup step is not done until you have observed it
+  - Paths handed across a boundary are resolved from the far side
 - Environment mappings
 - Git as an optional staging medium
 - Claude Code Projects — disposable threads, no local skills, no pinned
@@ -659,6 +660,36 @@ the instructions are handed over — it is complete when the agent has
 independently observed the resulting state. An unverified handoff and a
 silently skipped step produce the same artefact: a setup both parties
 believe is done.
+
+### Paths handed across a boundary are resolved from the far side
+
+A path the agent has verified from inside its own execution context proves
+nothing about the same string in the user's hands. Three boundaries, each
+observed in one install. **Packaging:** inside a Store-packaged (MSIX)
+desktop app on Windows, `%APPDATA%\<App>` is transparently redirected to
+`%LOCALAPPDATA%\Packages\<App>_<id>\LocalCache\Roaming\<App>`, so every
+check the agent runs — bash, PowerShell, Python — finds the config file
+there, and a script the user starts from Explorer, outside the package,
+finds nothing; processes started from the app's own terminal die with the
+app, so "run it after quitting the app" cannot be done from inside either.
+**Sync redirection:** `%USERPROFILE%\Documents` is not the Documents
+folder Explorer opens once a cloud drive has redirected the known folder;
+resolve user folders with the shell's known-folder lookup
+(`[Environment]::GetFolderPath('MyDocuments')`), never by composing them
+from the profile path. **Shell dialect:** a Git Bash drive path
+(`/c/dev/<repo>`) passes every pre-flight in Git Bash and fails in the
+PowerShell the user opens (`fatal: cannot change to '/c/dev/<repo>'`);
+`"C:/dev/<repo>"` works in PowerShell, cmd and Git Bash alike. The same
+shape at the plugin boundary: `python plugins/<p>/scripts/x.py` and "show
+`docs/<file>.md` from this repo" are correct in the author's checkout and
+absent for every consumer, because installation copies only the plugin's
+own directory. So: on a packaged host keep the workspace and any hook
+script outside `AppData`; resolve every path handed to the user — hook
+script, config, workspace — once from the user's side of the boundary
+before handing it over; and make that resolution a step bound to the
+hand-off, not a principle consulted while authoring. The third instance
+above happened in the same session that had written the principle down,
+which is what a rule without a step looks like.
 
 ## Environment mappings
 
