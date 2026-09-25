@@ -179,8 +179,9 @@ def read_core_ceiling(skill_md):
     if m:
         km = re.search(r"(?m)^%s:\s*(\S+)\s*$" % CORE_CEILING_KEY, m.group(1))
         if km:
-            if km.group(1).isdigit():
-                return int(km.group(1))
+            v = km.group(1).strip("\"'")   # a quoted number is still the number
+            if v.isdigit():
+                return int(v)
             print(f"note: {CORE_CEILING_KEY} is not a whole number "
                   f"({km.group(1)!r}) — core size not gated")
             return None
@@ -376,8 +377,14 @@ def check_dir(skill_dir, fails):
             data = {}
     except ImportError:
         yaml_available = False
-        data = {"name": (re.search(r"(?m)^name:\s*(.+)$", fm) or [None, ""])[1].strip(),
-                "description": folded_description(fm)}
+        # Strip one layer of matching surrounding quotes: the template asks
+        # for `name: "x"`, a real parser never sees the quote characters as
+        # part of the value, and .strip() removes whitespace, not quotes —
+        # so the hardened fallback failed the bundle it ships inside.
+        raw = (re.search(r"(?m)^name:\s*(.+)$", fm) or [None, ""])[1].strip()
+        if len(raw) >= 2 and raw[0] == raw[-1] and raw[0] in "\"'":
+            raw = raw[1:-1]
+        data = {"name": raw, "description": folded_description(fm)}
     except Exception as e:  # yaml error
         # Name the cause the check can detect, not the first field it then
         # fails to find: an unquoted `: ` inside a description is the common
