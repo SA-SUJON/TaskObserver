@@ -966,6 +966,25 @@ it having done so — observed: a session compacted mid-task and the resumed
 turn ran no probe, no scan and no per-skill grep, because nothing named the
 compaction as a trigger.
 
+**The write path has to survive the compaction; the skill body does
+not.** Observed: after a compaction the session-start hook printed its
+reminder, and before the skill was re-invoked a deliverable flush fired
+— two observations were written by copying an existing file's
+frontmatter and taking the next number from a directory listing. The id
+snippet never ran, the floor stayed two behind the ids issued, and the
+sweep, the collision guard and the noclobber create all went
+unexercised. The pointer to this section sits in the skill body, which
+is exactly what the compaction removed. Between a compaction and the
+skill's re-invocation nothing is written by any other route: a flush
+that fires first runs `scripts/new-observation.sh` (it needs no skill
+body in context — a slug and the workspace root are its only inputs) or
+waits for the invocation, and never copies another file's header. A
+rule that must reach a resumed context has to travel in a channel that
+survives the compaction — the activation config, or a session-start
+hook where the harness fires it on compaction as well (Claude Code's
+`SessionStart` does unless a matcher excludes `compact`), which is then
+the channel that arrives first.
+
 **The compaction summary's list of previously invoked skills is a lower
 bound, never the session's skill set.** A summary preserves what it judged
 salient about the *work*; skill loads are infrastructure, not work, so they
