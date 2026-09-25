@@ -939,8 +939,13 @@ common way a staged skill's frontmatter stops parsing — see
 that any Python check run inside the staged tree runs with
 `PYTHONDONTWRITEBYTECODE=1` (a `py_compile` there leaves a `__pycache__/`
 the pre-delivery gate rejects, on a mount that cannot unlink it without
-the delete grant), and an explicit rule that subagents do not change any
-observation's status. Reserve status marking and archival for the parent
+the delete grant), and an explicit rule that subagents do not change
+any observation's status and do not write observations: a finding worth
+logging goes in the subagent's final report and the parent writes it,
+because two writers watching one task from two vantages log one finding
+twice, and merging two entries about one fact is not the renumbering the
+duplicate-id check performs (Cross-slice duplicates, below). Reserve
+status marking, archival and observation writes for the parent
 session. The
 parent runs `scripts/validate-skill-bundle.py` on EVERY staged skill
 BEFORE any status bookkeeping — a subagent's "done" is a claim about its
