@@ -14,6 +14,8 @@ in an environment without filesystem access.
   - Install-layout hazards — three ways a skill silently stops existing
   - Two harness behaviours that block the protocol rather than break it
   - If CLAUDE.md (or the equivalent config) is governance-protected
+  - A third denial class: an automated content classifier
+  - A delegated setup step is not done until you have observed it
 - Environment mappings
 - Git as an optional staging medium
 - First-run backfill
@@ -515,6 +517,73 @@ installed at all, fall back to the declarative config instruction, saying
 plainly that the enforced tier is not in place and the probabilistic one
 is. A hook that silently failed to install is worse than none: the user
 believes the strongest tier is active.
+
+### A third denial class: an automated content classifier
+
+The fallbacks above branch on two kinds of denial: a hard guard (a
+governance hook, a file-protection rule) and an interactive permission
+prompt that one user approval clears. There is a third, and it behaves like
+neither.
+
+An automated content classifier can refuse the edit on the grounds that the
+activation block is **third-party instruction text being written into a
+user-scope config**, where it will steer every future session. Reported in
+the field as `Instruction Poisoning`, on a fresh install into a global
+Claude Code skills directory.
+
+What follows from that:
+
+- **Rewording does not help.** The objection is to provenance and always-on
+  scope, not to the phrasing, so there is no lighter version to retry.
+  Shortening the block and trying again is the obvious move and it fails —
+  make that attempt at most once, then stop.
+- **The cheapest remaining fallback is not in the list above.** Ask the user
+  to change permission mode, then retry the *same* tier. In the reported
+  case the wall was the permission mode rather than a policy: once the user
+  switched out of auto mode, the hook tier installed with no friction at
+  all. Try this before handing the block over for pasting.
+
+**The ladder is not monotonic.** Tier 4 — the session-start hook, which this
+file elsewhere calls the only enforced option — can be blocked *harder* than
+tier 3, and for an unrelated reason. In the same install the hook was
+refused as `Auto-Mode Bypass`: configuring a hook changes what the harness
+executes automatically, which that permission mode withholds categorically
+rather than on content. Writing the hook *script file* alone, wired to
+nothing, was refused on the same grounds. So tiers 3 and 4 failed for
+different reasons that happened to coincide, and the tier presented as the
+robust fallback for a blocked config edit was the one held furthest out of
+reach. Do not present the ladder to the user as "if 3 fails, 4 will work".
+
+### A delegated setup step is not done until you have observed it
+
+Every fallback above ends by handing something to the user: paste this
+block, add this hook entry, authorize this edit. The instruction is where
+the hand-off ends today, and that is one step short.
+
+In the reported case the user was given the block, said they had pasted it,
+and had not. The file's mtime was unchanged and `task-observer` appeared
+nowhere outside the session's own transcript. It surfaced only because the
+Session Start Protocol was being run by hand to verify the install —
+otherwise the install would have looked complete to both parties, with no
+activation layer in place. That is precisely the never-activated install
+that step 4 structurally cannot detect.
+
+**So pair every handoff with a check you run yourself**, in the same
+session, and report the result:
+
+- `grep` the config file for the skill name;
+- compare the file's mtime against the moment you handed the block over;
+- for a hook, confirm the harness lists it, not merely that the file exists.
+
+"The user says they pasted it" is a claim about the world. An install can
+check it, cheaply, and should before declaring itself configured.
+
+**The principle.** When a setup step is delegated to a human because the
+agent is not permitted to perform it, the delegation is not complete when
+the instructions are handed over — it is complete when the agent has
+independently observed the resulting state. An unverified handoff and a
+silently skipped step produce the same artefact: a setup both parties
+believe is done.
 
 ## Environment mappings
 
