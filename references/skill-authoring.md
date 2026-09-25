@@ -439,6 +439,36 @@ the rule and leaked because of it. A human noticed about ten minutes after
 posting; the fix was delete and re-post, because an edit leaves the first
 version in the edit history.
 
+**A draft a person will paste is checked the way it will be consumed.**
+The pre-flight runs before a draft exists and the gate above reads the
+draft for what must not be in it; neither reads it as a paste source,
+and two properties break in transit that no content check sees.
+Observed: three issue drafts in one file, each headed `**Title:**
+<title>` and hard-wrapped with blank lines between paragraphs, posted by
+hand — every published title began with `** ` because the label's
+closing asterisks were selected with the value, and every body lost all
+of its blank lines, so its paragraphs rendered merged; the pre-flight
+had passed, the identifier scan was clean, and a post-publication
+comparison that normalised whitespace called the bodies identical. So,
+for any report handed over to be posted by hand: (1) **shape** — each
+field alone in its own fenced block, the fence longer than any backtick
+run inside it, the target field named on the line above the block
+("paste into Title") and never as a label on the value's line; one
+paragraph per line with the blank lines between them kept, because issue
+bodies render a single newline as a line break; draft metadata meant for
+another field (a label, a labels suggestion) never sits inside the body
+block; (2) **paste-check** — before hand-over, extract each block
+exactly as a paste would and compare it with the intended field value;
+(3) **read-back** — after posting, fetch the published title and body
+and compare them with the draft line by line, blank lines included,
+never through a whitespace-normalising comparison: a comparison that
+normalises away the property under test certifies nothing, and the
+person's copy path can drop structure that no check on the file can
+see. The same holds for every artefact handed over for pasting — an
+activation block, a hook entry, a handoff document; the config case
+carries its own read-back in `environments.md` ("A delegated setup step
+is not done until you have observed it").
+
 ## Confidentiality layers
 
 The open-source/internal boundary is a confidentiality boundary; enforce it
