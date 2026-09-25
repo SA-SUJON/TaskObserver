@@ -20,6 +20,7 @@ empty.
   - A list entry holding a colon is not portable
   - A park condition names the result, never your own vehicle
   - Context preservation — the `reference:` field
+  - Commands inside an observation — run before the file is written
 - Scanning cheaply
   - Why the session-start scan does not satisfy the per-skill check
   - An empty scan over a non-empty log is a broken command
@@ -89,6 +90,7 @@ means this directory.
 | `resolved` | Resolution date; set only when status is `actioned` or `declined`. Archival is gated on it. |
 | `resolution` | What was done, or why declined. |
 | `reference` | Optional path to saved session-local evidence. |
+| `commands_verified` | One clause per executable command the body quotes: `run`, with what it returned, or `NOT RUN` with why; the literal `none` where the body quotes no command. Blank on a body that quotes a command means the command was never run. See "Commands inside an observation" below. |
 | `skill_qualifiers` | Optional map: skill name → the section or part of that skill meant. |
 | `migration_note` | Present only on files converted from a legacy log where the converter refused to guess; clear it once reviewed. |
 
@@ -192,6 +194,29 @@ directory fails both tests, and a role name ("the scratchpad", "my
 notes") is not a path at all. Such a pointer cannot fail at write time,
 only at read time, when its author is no longer there to repair it — a
 pointer a fresh session cannot follow is not preservation.
+
+### Commands inside an observation — run before the file is written
+
+An observation that quotes an executable command carries it onward with a
+first-hand observation's authority, and what was witnessed was the
+experience — the command is usually reconstructed from memory, after the
+fact. Nothing downstream can tell the two apart. The authoring pre-flight
+in `skill-authoring.md` runs when a skill is written, often on another
+machine, another day, without the system the command refers to; at
+logging time the session is standing in front of that system and running
+it costs seconds. So before the file is written, run every command the
+body quotes — literally, and look at its output — and where that is not
+possible, mark the command unverified in the body. Record the outcome in
+`commands_verified:`, one clause per command, and the literal `none` where
+the body quotes no command, for the same reason `siblings_checked:` never
+stays blank: a body with an unrun command is byte-identical whether it was
+checked and trusted or never considered, and only the field makes the
+absence visible. (Observed: three observations turned into one skill
+carried three wrong commands between them — a flag that does not exist on
+the distribution named, `$!` addressed to a wrapper instead of the process
+it started, an inventory read from a cache a prior step has to populate —
+caught only because that skill happened to be authored where they could
+run.)
 
 ## Scanning cheaply
 

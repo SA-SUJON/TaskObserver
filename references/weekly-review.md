@@ -737,6 +737,8 @@ provenance** ("observed on N documents, all in `approved` status") rather
 than as a fact, so the next reader knows what would have to be re-checked.
 The cost is one query; the alternative is a rule that is wrong in exactly
 the cases nobody sampled.
+A command the entry quotes is a claim of this kind; its `commands_verified:`
+clause (`observation-log.md`) says whether anyone has run it.
 
 Where an approved item's destination is an upstream report — an issue or
 PR against a skill someone else maintains — drafting that report IS the
