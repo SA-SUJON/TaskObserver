@@ -965,11 +965,29 @@ it: the file is created, it looks superficially right, and parts of its
 content have been replaced by the output of commands. Quote the delimiter
 (`<<'OBS'`) whenever a shell write is genuinely the only path — a
 `set -C` noclobber create has no editing-tool equivalent — and prefer the
-editing tool everywhere else.
+editing tool everywhere else. Where the shell is that only path, write the
+frontmatter with `printf` and the body with a QUOTED heredoc: quoting the
+delimiter disables every substitution, so the body cannot carry
+variables, and the id and the dates go in the `printf` above it —
 
-If a shell write happened anyway, **verify the file is still text before
-doing anything else**: `file "$f"` or a `grep -c ''` that does not answer
-"Binary file matches".
+```bash
+printf -- '---\nid: %s\ntitle: "%s"\nstatus: open\ndate: %s\n' "$next_id" "$title" "$(date +%F)" > "$f"   # …the remaining fields, then the closing ---
+cat >> "$f" <<'OBS'
+**Issue:** … `find -exec` … $(date) … written literally, none of it run
+OBS
+```
+
+The same rule covers `echo -e` and any `"$(cat <<…)"` form. Exit code 0
+is not evidence: the unquoted form creates the file, produces valid
+Markdown with a parsing header, and the scan reports it healthy, so the
+damage is in the body that nothing reads until a review opens it.
+
+If a shell write happened anyway, **verify the file in the same turn,
+before doing anything else**: `file "$f"` or a `grep -c ''` that does not
+answer "Binary file matches", and a re-read of the body — one that came
+out shorter than you wrote, or that contains a command's output where
+the explanation was, is the heredoc failure. Checking later means
+checking never.
 
 **A declined entry records a verdict; without its premise the verdict
 cannot be revisited.** `declined` means someone judged an alternative

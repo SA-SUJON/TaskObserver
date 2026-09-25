@@ -292,13 +292,11 @@ bounded point") and log the evidenced problem report, not a fifth probe.
 **Do NOT log:** one-off corrections that don't generalise; preferences
 already captured in a skill; tool bugs unrelated to methodology;
 observations needing proprietary client information to be useful in an
-open-source skill (unless an internal skill is the right home). The
-generalisability test, when unsure: would this still make sense in another
-project, and for another task using the same skill? Does it name a missing
-rule, step or principle rather than fix this task? Is it likely to recur?
-Mostly no → task context, not an observation. Before minting a
-`proposes_skill` name, reuse a fitting existing candidate — independently
-logged proposals for one skill rarely share a name.
+open-source skill (unless an internal skill is the right home). When
+unsure, run `references/signals.md` ("The generalisability test"): mostly
+no → task context, not an observation. Before minting a `proposes_skill`
+name, reuse a fitting existing candidate — independently logged proposals
+for one skill rarely share a name.
 
 **Check for a restatement before writing.** Before creating the file,
 list the open observations that name the same target skill (the scan at
@@ -445,8 +443,10 @@ The guard line distinguishes "the log says zero" from "I could not read
 the log", the sweep's count does the same for the archival loop, the prefix
 guard refuses a number already in use under any slug, and the `noclobber`
 create refuses an existing path — write the body only after that create
-succeeds. Load `references/observation-log.md` ("The guard line, the sweep's
-count and the noclobber create") when any of them fires.
+succeeds, with the editing tool or a QUOTED heredoc, never an unquoted
+one: `references/observation-log.md` ("Editing an existing observation").
+Load `references/observation-log.md` ("The guard line, the sweep's count
+and the noclobber create") when any of them fires.
 
 **Run the snippet immediately before EVERY write, including the first and
 only one of a session** — an earlier read of the log is not a substitute,
