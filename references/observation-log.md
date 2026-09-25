@@ -607,7 +607,17 @@ shell command owns that command's portability: lead with the portable
 form, never offer it as a footnote the agent reaches for after the primary
 has failed — and make any command that derives a number from a file fail
 loudly on an empty result, because a command that fails to empty rather
-than to error may never announce that it failed at all.
+than to error may never announce that it failed at all. A snippet that
+spawns one process per file carries an undeclared upper bound on the log
+it can read: per-file spawning degrades linearly with a large constant —
+seconds for a hundred files on Linux, past a two-minute tool timeout on
+Windows — so it never warns, it stops completing, and a backgrounded scan
+is indistinguishable from a slow one until something downstream consumes
+a partial answer. The counts in the session-start scan are batched
+(`-exec … {} +`); the content print and the archival sweep are per-file
+loops. Treat a scan that does not return as a broken instrument, never as
+a slow one to wait on — the BROKEN guard cannot fire for a command that
+never finished.
 
 ### Shell portability of the id snippet — why the case patterns are parenthesised
 
