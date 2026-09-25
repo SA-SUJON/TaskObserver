@@ -17,6 +17,7 @@ empty.
 - Layout
 - Frontmatter fields
   - Unquoted `: ` in a prose value — how far it drifts before anyone notices
+  - A list entry holding a colon is not portable
   - A park condition names the result, never your own vehicle
   - Context preservation — the `reference:` field
 - Scanning cheaply
@@ -77,7 +78,7 @@ means this directory.
 | `parked` (status value) | Decided, but blocked on an external precondition: the entry is sound and no longer awaiting a judgement, so reviews drop it from the work queue and never re-escalate it. It is not resolved, so it does not archive — see Archival below. It stays in `observation-log/` until its `parked_until:` condition is met (set it back to `open`) or it is genuinely resolved. Recording a park as free text while leaving `status: open` does not work: nothing classifies on prose, so the entry stays in the queue and is re-raised at every review. |
 | `parked_until` | **Mandatory whenever status is `parked`**, empty otherwise. One line naming the condition that unparks the entry ("the X scheduled task is re-enabled"), phrased so a later review can answer yes or no without reopening the original decision. |
 | `type` | `open-source` or `internal` (see Taxonomy in the core skill). |
-| `skill` | **Always a list**, even with one entry, so no consumer ever branches on string-vs-list. First entry is primary. May be empty. |
+| `skill` | **Always a list**, even with one entry, so no consumer ever branches on string-vs-list. First entry is primary. May be empty. A plugin-scoped name is quoted: `["plugin:skill", other-skill]` (below). |
 | `proposes_skill` | List of new-skill candidates by working name. Independent of `skill`; either may be empty, both may be filled. |
 | `target_file` | List of paths, for observations whose right home is not a skill: an instructions file, a memory note, an agent brief, the register a routine reads. Name the file the fix will actually be written to, so a review can go there instead of remapping the entry onto the nearest skill. Measured on a first review of 27 legacy entries: 15 named a non-skill in `skill:` ("browser verification protocol", "documentation hygiene") and every one had to be resolved to a path by hand before the review could start. |
 | `siblings_checked` | **Mandatory, never blank.** Records that the sibling check happened and what it concluded: the family name, the members evaluated, and the verdict (propagated / instance-specific). `none` only where the target belongs to no family. Missing or empty = logged without a sibling check, and reviews count it as such. |
@@ -116,6 +117,42 @@ value contains an unquoted `: ` beside the file count, so a log drifting
 into this state announces itself at session start rather than at the review
 that trips over it. Re-verify by running a real YAML parse over the
 frontmatter of every file, not by re-reading the template.
+
+### A list entry holding a colon is not portable
+
+The frontmatter names no single parser, so "valid" means: loads under
+every YAML parser a consumer of this log is likely to use. Two rules
+disagree on one line, and the template used to produce it. Under the
+YAML 1.2 reading, a `:` inside a plain scalar in flow context is part of
+the scalar when the next character is not a space, so `skill:
+[plugin:name]` is the list of one string it looks like; under the older
+rule, which libyaml-backed parsers (Ruby's Psych, Go, `yq`) have applied
+in some versions, a `:` ends the plain scalar and the line raises `found
+unexpected ':' while scanning a plain scalar`. Both are correct
+implementations of different specifications, so the header is neither
+valid nor invalid on its own — it is not portable. Measured on one
+202-file log: the shipped scan reported 8 suspect headers, a PyYAML pass
+0 invalid, a Psych pass 127 invalid, and all three were right about the
+same corpus.
+
+The failure is invisible from either side: a Python consumer
+(`migrate-log.py`, `validate-skill-bundle.py`, most hooks) sees a clean
+log forever; a consumer on the other rule sees most of it fail to load.
+So the rule is the intersection: **quote any list entry that contains a
+colon** — `skill: ["superpowers:test-driven-development",
+task-observer]` — or use a block list, where the colon is legal
+unquoted. Both forms parse identically under both rules; the cost is two
+characters per scoped entry. A plugin-scoped name is not a bare
+kebab-case name, which is why "keep lists bare" stopped being correct
+once namespaced skills were observed. `scripts/migrate-log.py` already
+writes the quoted form, so a migrated log is portable; entries written
+by hand from the template are the ones to check.
+
+The scan's `suspect` count does not see this class — it excludes
+`[`-values by design — so a suspect count of zero says nothing about
+flow lists. Re-verify with two parsers, not one: a check that agrees
+with the parser you already trust is the one to distrust
+(`skill-authoring.md`, "A verification command that AGREES with you").
 
 ### A park condition names the result, never your own vehicle
 

@@ -488,9 +488,9 @@ id: 0
 title: "Short descriptive title"
 status: open            # open | actioned | declined | superseded | parked
 type: open-source       # open-source | internal
-skill: [skill-a, skill-b]        # existing skills this improves — always a
-                                 # list, even with one entry; first entry is
-                                 # primary; may be empty: []
+skill: [skill-a, "plugin:skill-b"]  # existing skills this improves —
+                                 # always a list, first entry primary, may be
+                                 # empty: []; quote an entry holding a colon
 proposes_skill: []               # new skills this argues for, by working
                                  # name; an observation can fill either
                                  # list or both
@@ -521,15 +521,15 @@ section or rule; for new skills, scope and key components.]
 **Principle:** [The generalisable takeaway — the most important field.]
 ```
 
-**Every prose value is double-quoted.** `title`, `siblings_checked`,
-`area`, `session_context`, `resolution`, `parked_until` and `reference`
-carry free text, and free text contains `: ` as the common case, not the
-exotic one. Unquoted, that is invalid YAML: the frontmatter still
-extracts, so the scan notices nothing, but every consumer that PARSES it
-throws on the file. Quote the value (`"…"`, inner `"` as `\"`), keep
-lists in `[]` with bare kebab-case names, leave dates and status words
-bare. Load `references/observation-log.md` ("Frontmatter fields") for how
-far this drifts unnoticed and what the scan's suspect count means.
+**Every prose value is double-quoted, and so is a list entry holding a
+colon.** `title`, `siblings_checked`, `area`, `session_context`,
+`resolution`, `parked_until` and `reference` carry free text, and free
+text contains `: ` as the common case; unquoted, that is invalid YAML —
+the scan notices nothing, every consumer that PARSES the header throws.
+A plugin-scoped name in a `[]` list (`[plugin:name]`) loads under one
+YAML parser and fails under another: quote it (`"…"`, inner `"` as `\"`);
+bare kebab-case names, dates and status words stay bare. Load
+`references/observation-log.md` ("Frontmatter fields") for the drift.
 
 **`parked` means decided, not pending:** sound but blocked on an external
 precondition, out of the work queue, never archived, `parked_until:`
