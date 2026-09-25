@@ -309,6 +309,18 @@ matches nothing, and a filter silently becomes a match-nothing filter;
 with `find`. Every snippet here defines the paths it uses in the same
 invocation that uses them; keep that property when adapting them.
 
+**Under zsh, an unquoted `$var` is not split into words, and a word that
+begins with `=` is expanded as a command path.** Both run correctly under
+bash, so a snippet pre-flighted there ships them. A list carried in a
+variable and looped over (`for f in $names`) runs its body once, over the
+whole string, so a membership test built that way is always false or
+always true — and moves no count, because a count guard counts files while
+the defect is in the names. A bare `echo ====` inside a compound command
+aborts it with `=== not found`, and everything after it is lost. Never
+carry a list in a variable: write it to a file under the workspace and
+read it back with `while IFS= read -r`, or compare two such files with
+`comm`; quote any word that starts with `=`.
+
 ### Why the session-start scan does not satisfy the per-skill check
 
 **This scan does not satisfy the per-skill check** (the grep run each time a
