@@ -649,7 +649,10 @@ more than one. Then, before anything is presented:
   fallback in `observation-log.md`) and widen `skill:` if it was
   under-scoped. Count these — "N observations logged without a sibling
   check" is a health metric of the logging practice, not a per-entry
-  nuisance.
+  nuisance. Count the `assumed` exclusions the same way, from the
+  frontmatter alone, and open each such sibling before actioning the
+  entry: an exclusion grounded on `assumed` is a review item, not a
+  verdict (`observation-log.md`, "Record the verdict").
 - **Confidentiality pass over the log itself.** For every OPEN
   `open-source` observation, check the Issue and Improvement fields for
   client-identifying specifics no longer needed for context and strip

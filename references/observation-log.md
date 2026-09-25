@@ -83,7 +83,7 @@ means this directory.
 | `skill` | **Always a list**, even with one entry, so no consumer ever branches on string-vs-list. First entry is primary. May be empty. A plugin-scoped name is quoted: `["plugin:skill", other-skill]` (below). |
 | `proposes_skill` | List of new-skill candidates by working name. Independent of `skill`; either may be empty, both may be filled. |
 | `target_file` | List of paths, for observations whose right home is not a skill: an instructions file, a memory note, an agent brief, the register a routine reads. Name the file the fix will actually be written to, so a review can go there instead of remapping the entry onto the nearest skill. Measured on a first review of 27 legacy entries: 15 named a non-skill in `skill:` ("browser verification protocol", "documentation hygiene") and every one had to be resolved to a path by hand before the review could start. |
-| `siblings_checked` | **Mandatory, never blank.** Records that the sibling check happened and what it concluded: the family name, the members evaluated, and the verdict (propagated / instance-specific). `none` only where the target belongs to no family. Missing or empty = logged without a sibling check, and reviews count it as such. |
+| `siblings_checked` | **Mandatory, never blank.** Records that the sibling check happened and what it concluded: the family name, the members evaluated, and the verdict per member (propagated / excluded). Every **exclusion** carries its ground — the file and section (or line) read in that sibling showing it does not apply — or the literal token `assumed`; inclusions need no ground, because including a sibling is the safe error. An `assumed` exclusion is a review item, not a settled verdict. `none` only where the target belongs to no family. Missing or empty = logged without a sibling check, and reviews count it as such. |
 | `area` | The part of the skill or workflow concerned. |
 | `date` | Date logged, `YYYY-MM-DD`. |
 | `session_context` | What was being worked on. |
@@ -714,6 +714,24 @@ field is frontmatter, the cheap scan above can report "N observations
 logged without a sibling check" without reading a single body. Where a
 skill already relies on "the write is the enforcement", a new rule that
 writes nothing is the odd one out and should be suspected on that basis.
+
+**Recording the verdict is not recording its evidence.** The field makes
+the absence of the *ritual* visible; it does nothing for the absence of
+the *grounds*, and once the ritual is habitual the failure moves from the
+omitted field to the confidently filled one. Observed: a sibling excluded
+with a specific verdict — "selects items by stable id, so this does not
+apply" — whose own documentation carried a prominent warning about
+exactly the defect under discussion; the verdict read like a checked one
+and was an assumption, found only when a later session opened that
+sibling for an unrelated reason. The asymmetry decides where the ground
+goes: a sibling wrongly included costs one redundant paragraph at the
+next review, where someone reads it and drops it; a sibling wrongly
+excluded leaves the family silently and for good, because nothing
+downstream ever acts on a negative verdict. So every exclusion names
+what it rests on — the file and section read in that sibling — or says
+`assumed`, and the review opens an `assumed` sibling before accepting
+the exclusion. Example:
+`siblings_checked: "list-commands: render, pick, close — render added; pick excluded (pick.md §2, selects by stable id); close excluded (assumed)"`.
 
 **4. Propagation and drift audit at review time** — see
 `weekly-review.md` (Steps 3 and 4). The first three parts only cover what

@@ -496,12 +496,12 @@ proposes_skill: []               # new skills this argues for, by working
                                  # list or both
 target_file: []                  # when the right home is not a skill at all:
                                  # the path the fix will be written to
-siblings_checked: "family-name: a, b — shared, both added"
+siblings_checked: "family-name: a, b — a added; b excluded (b/SKILL.md §2)"
                                  # MANDATORY, never blank: the family name,
-                                 # the members evaluated and the verdict —
-                                 # or "family-name: a, b — instance-specific,
-                                 # no propagation"; the literal none only
-                                 # where the target belongs to no family
+                                 # each member's verdict — every exclusion
+                                 # names the section read in it, or the
+                                 # literal assumed; none only where the
+                                 # target belongs to no family
 area: "which part of the skill or workflow"
 date: YYYY-MM-DD
 session_context: "what task was being worked on"
