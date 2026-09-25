@@ -30,6 +30,7 @@ empty.
   - The guard line, the sweep's count and the noclobber create
   - Run the snippet immediately before every write
   - Resolve each id at its own write time
+  - Floor staleness — the floor below the highest active prefix
   - A structural probe that comes back empty is a stop signal
   - Why this is the entire concurrency story
 - Read the full body before resolving, dismissing, fixing or citing
@@ -317,6 +318,46 @@ Apply it to **any command whose empty or zero output is about to become a
 claim**: pair it with a second probe by different means, or state the
 result as "the probe returned nothing" rather than "there is nothing".
 
+**When the instrument is code written in this session, its input coverage
+is unverified by construction — print what it ingested, not only what it
+found.** A shipped snippet has at least been run against the population
+it is meant to read; a throwaway parser has been run against whatever its
+author's heuristic happened to match. Observed: a scan for a canonical
+term list, re-derived at call time from bullets under a plausible heading,
+reported "3 terms checked, hits: none" — the list's own machine-readable
+block held 24, and the parser had read three incidental bullets from an
+adjacent section. A pass from an instrument that saw an eighth of its
+input is not evidence of anything, and it was caught only because the
+count looked implausibly small. So the guard's form for session-written
+code is a **coverage assertion before any result**: print the count of
+terms, rows or files the instrument read and assert it against the
+canonical source's own count (the block's line count, the directory's
+file count, the table's row count) — a mismatch fails the step rather
+than degrading to a heuristic. The count is the guard; the hits are the
+finding. The same applies to green results as to empty ones: "0 hits" is
+a claim about the corpus only once the instrument is known to see the
+corpus (the timelessness scan in `skill-authoring.md` records which
+patterns ran for exactly this reason).
+
+**A claim about how an external system behaves is an instrument reading,
+and gets the same guard — whatever produced it.** Whether it comes from a
+delegated agent's report, from a tool written this session, or from the
+agent's own reasoning, it is unverified until something outside that
+inference returns it. State the mechanism as a hypothesis, name the
+observation that would settle it, and when the check costs minutes and
+being wrong costs an irreversible action, run the check before answering
+rather than after being challenged. Observed: whether signing a commit
+would clear a hosting platform's "unverified" badge decided a force-push
+to a public repository; the answer was asserted twice, confidently, with
+no evidence, and settled in ninety seconds by two API calls once the user
+pushed back with a competing mechanism — which turned out to be the
+correct cause. The tell that separates this from ordinary uncertainty is
+**repetition**: a first confident answer is a guess; repeating it under
+implicit doubt without going to look is the moment the guard should fire,
+because repetition feels like consistency and is entrenchment. Being
+accidentally right is not being reliable, and the user cannot tell the
+two apart from outside.
+
 ### A refused print is not an empty log
 
 The session-start scan does two different jobs in one block, and they have
@@ -517,13 +558,25 @@ hi=$( { ls "$d" "$d/archive" 2>/dev/null | grep -oE '^[0-9]+'; cat "$d/archive/.
 [ "$hi" -eq 0 ] && [ -n "$(find "$d" -maxdepth 1 -name '*.md')" ] && { echo "ID COMMAND BROKEN — log is non-empty but no ids extracted"; exit 1; }
 next_id=$(( hi + 1 )); echo "$next_id" > "$d/archive/.id-floor"
 f="$d/$(printf '%04d' "$next_id")-<slug>.md"      # the target path, built from the id just derived
-[ -e "$f" ] && { echo "COLLISION — $f exists; re-derive the id"; exit 1; }
+[ -n "$(find "$d" -maxdepth 2 -name "$(printf '%04d' "$next_id")-*.md")" ] && { echo "COLLISION — id $next_id already used; re-derive"; exit 1; }   # guard the id PREFIX across active + archive, not the path
 (set -C; : > "$f") || exit 1                        # noclobber: create, never truncate an existing file
 ```
 
 The snippet leaves the derived number in `$next_id` and the target path in
 `$f`; append `printf '%04d\n' "$next_id"` if you also want the filename
 prefix echoed.
+
+**`scripts/new-observation.sh <slug> [workspace-root]` is this snippet as
+one command.** It performs the same steps in the same order — sweep, id,
+floor write, prefix guard, noclobber create — takes the pinned workspace
+root as its second argument or from `TASK_OBSERVER_WORKSPACE`, refuses a
+relative root, a malformed slug or a missing `observation-log/archive/`
+(halt and re-probe; never recreate from a writer), and prints the created
+path on stdout. Where it can run, it is the only write path: an id that
+exists only as the script's output cannot be carried in memory from an
+earlier read to a later write, which is the drift every rule in this
+section is trying to prevent. The inline snippet remains for harnesses
+where a script cannot be invoked.
 
 The `sed` strips the filename prefixes' zero-padding before the
 arithmetic. It is load-bearing, not cosmetic: shell arithmetic reads a
@@ -581,9 +634,24 @@ successfully, so without the count "nothing was due for archival" and
 the one case per-file isolation does not ("Why this is the entire
 concurrency story" below): two sessions that pick the same id *and* the
 same slug resolve to one identical path, where the second writer would
-silently replace the first. So the snippet refuses an existing path and
-creates the file under `noclobber` — write the body only after that create
-succeeds, and on a collision re-derive the id rather than overwrite.
+silently replace the first. So the snippet creates the file under
+`noclobber` — write the body only after that create succeeds.
+
+**The collision guard is keyed on the id prefix, not on the path.** An
+earlier form tested `[ -e "$f" ]` — the full path, slug included — and
+could not catch the collision that actually happens: two writers deriving
+the same number with *different* slugs produce two different paths, both
+creates succeed, and two files share one id with no error anywhere. A
+guard has to be keyed on the invariant it protects; noclobber protects a
+path, the invariant is a unique number, and a guard on the path passes
+every violation of the number that uses a different slug — which is all
+of them. So the guard now asks whether any file with the derived prefix
+exists in `observation-log/` or `archive/` (`find … -name 'NNNN-*.md'`,
+never a bare glob), and halts if one does. It fires only when the
+derivation is stale — a correct max-of-three cannot produce a number that
+is already in use — so a COLLISION here means the id came from somewhere
+other than a snippet run immediately before this write. Re-run the
+snippet; never adjust the number by hand.
 
 ### Run the snippet immediately before every write
 
@@ -604,6 +672,20 @@ nothing lost — but should be fixed on discovery rather than left for a
 review to notice: derive a correct id with the snippet, `mv` the newer file
 to that prefix, and edit its `id:` frontmatter field to match. Both are
 ordinary single-file operations; no other entry is touched.
+
+**The id printed by the session-start scan is never an input to a write.**
+The scan prints ids for awareness — which observations exist, what they
+target — and awareness is the wrong source for a number that has to be a
+maximum at the moment of writing. The signature of the failure is
+unmistakable after the fact: a new file numbered "highest id visible at
+session start, plus one", written an hour later, while the directory and
+the floor both already stood ten higher. That has now happened twice with
+this rule loaded and correct in the writing session, which is the
+second-violation condition: the remedy is not a firmer sentence but a write
+path that cannot be split — `scripts/new-observation.sh` (above), where a
+script can run, so that "resolve at write time" is what the only available
+write path does rather than a rule about when to run a snippet. The prefix
+guard is the backstop for the harness where it cannot.
 
 ### Resolve each id at its own write time
 
@@ -643,6 +725,30 @@ turn — which makes it the one no amount of caution about "other writers"
 prevents. When several observations are due, write them one at a time, each
 after the previous write has completed.
 
+### Floor staleness — the floor below the highest active prefix
+
+`.id-floor` is only a safety net if every issuer updates it. The
+max-of-three derivation absorbs a lagging floor without a collision, so the
+lag is invisible in ordinary use — until the active directory is archived
+down, when a floor that lags is exactly the precondition for the counter
+restarting over ids already issued. The lag is detectable: **floor < highest
+active prefix means an issuer skipped the floor write**, and whatever wrote
+those files did not run the snippet (observed: three consecutive ids issued
+with the floor left three behind). The scan may assert it; the check is one
+line, and it belongs after the scan's counts, before the content print:
+
+```bash
+floor=$(sed 's/^0*\([0-9]\)/\1/' "$d/archive/.id-floor" 2>/dev/null | tr -d ' \n')
+top=$(ls "$d" 2>/dev/null | grep -oE '^[0-9]+' | sed 's/^0*\([0-9]\)/\1/' | sort -n | tail -1)
+[ -n "${floor:-}" ] && [ -n "${top:-}" ] && [ "$floor" -lt "$top" ] && echo "NOTE: .id-floor ($floor) below highest active id ($top) — an issuer skipped the floor write"
+```
+
+The line is optional in the core's scan snippet (the core is at its
+ceiling); `scripts/new-observation.sh` runs the same check on every write
+and corrects the floor as its own floor write. A NOTE here is evidence that
+some writer bypassed the snippet — log that as the observation, not the
+number.
+
 ### A structural probe that comes back empty is a stop signal
 
 **A structural probe that comes back empty where content existed before is
@@ -677,9 +783,11 @@ write-back once silently erased entries appended minutes earlier. None of
 those failure modes exist when each file is isolated. In the rare case two
 parallel sessions pick the same id, the result is two files sharing a
 number — harmless, distinct files, nothing lost, as long as the slugs
-differ; an identical id AND slug is one path, which is what the snippet's
-existence check and `noclobber` create guard against; the next review renumbers
-one and logs a meta-observation.
+differ; the snippet's prefix guard catches that case at write time when the
+derivation is stale, an identical id AND slug is one path, which is what the
+`noclobber` create guards against, and the review's duplicate-id check (Step
+1, re-run at Step 6) renumbers whatever slips past both and logs a
+meta-observation.
 
 **The bounded-mutation discipline outlived the single-file log.** It was
 written for `log.md` and it applies to every deletion or replacement the

@@ -207,14 +207,35 @@ Criterion (2) is about whose judgement is driving the change, not about
 the size of the diff. Where the observation records the removal or
 restructure as DECIDED by the user AND carries a complete specification
 — it names what replaces what, in enough detail to apply without
-inventing anything — apply it, provided the target skill is not
-published open-source, and always flag it as the FIRST diff in the
+inventing anything — apply it, and always flag it as the FIRST diff in the
 summary for the user to read. Where the spec is partial ("something
 like…", "the old rules should probably go"), criterion (3) applies and
 it stays escalated. An escalation rule guards against the agent's own
 judgement, not against change as such: escalating a decision the user
 already made returns their answer to them as a question, buys no safety,
 and costs a cycle in which the skill stays knowingly wrong.
+
+**The published case is applied too, with its ceremony attached.** A
+restructure of a published skill needs a release branch, a test plan and
+a version bump, which an unattended run cannot decide alone — but
+"escalate without applying" is the wrong shape for that protection,
+because staging is not publishing: nothing reaches the repository until
+the publishing run, which already holds on `under_test` and on its
+freshness gate. So a user-decided, fully specified restructure of a
+published skill IS applied by the scheduled run, as a staged copy that
+(a) bumps the version by at least a minor; (b) is flagged as the first
+diff in the summary with the explicit line "published skill — install and
+the release are your call"; (c) carries a manifest entry that names it as
+a restructure, so the publishing run routes it to a release branch with a
+test plan under the standing rule for branches (Step 5); and (d) leaves
+the observation `open`, with the staged path in a `reference:` note, so
+the next review's presence check closes it once the copy is installed
+rather than re-applying it. What stays escalated is the decision the run
+cannot make — cut a branch or ship from main, and when — never the
+mechanical work. (Observed: read literally, the old proviso would have
+returned a maintainer's own "priority" decision to him as a question and
+left the published skill in the shape he had decided against for another
+cycle; the run staged it anyway, and this paragraph makes that the rule.)
 
 Escalate one DECISION per cluster, never the same decision twice — cluster
 the OPEN entries before the escalation list is written (Step 3), and list
@@ -401,6 +422,23 @@ differently, and only the diff sees both. Completion of a manual batch is
 a claim, not a state; the check is one `diff -rq` per skill and runs in
 seconds over a 20-skill batch. The Session Start Protocol (step 6) runs
 the same gate whenever it announces staged updates.
+
+**A `release/`-shaped staging with no manifest entry is a GATE FAILURE,
+surfaced in the summary's first line — never a copy to reconstruct
+silently.** The fallback sweep over recent date directories exists to catch
+a missing entry, but catching it is a finding, not a repair: a
+release-branch staging is cut together with its manifest entry, its hold
+and its test plan (Step 5, standing rule), and the entry's absence means the
+cutting act skipped its writes, so the hold and the test plan are suspect
+too. Observed, twice: a branch staged for install with no manifest entry
+and the publishing registry's hold still naming the previous, abandoned
+branch — found only because this sweep diffs every recent directory, and
+repaired by a later interactive session a day after the cut, so the
+reconstruction left no trace that the mechanism had failed. Name the
+directory, name the missing writes, and treat the copy as state (c); if
+the run reconstructs the entry so the rest of the gate can proceed, the
+first line says so and says what was written — a repair the summary does
+not mention is the silent reconstruction this rule forbids.
 
 Also read all active cross-cutting principles. If there are no OPEN
 observations and no outstanding principles: report "no open observations
@@ -621,7 +659,26 @@ the summary carries.
    with the current rules), **test branch** (behavioural changes to
    snippets, procedures or activation, and anything that changes what an
    agent does at session start), or **decline, with the reason**. Apply
-   the include-now set to the staged copy. When the review REWORDS a
+   the include-now set to the staged copy — **folding in the class, not
+   the line numbers.** A report lists the instances its author happened
+   to hit, which is the only thing a reporter can measure; completeness
+   is a property of the class, visible only to whoever holds the whole
+   tree. Before editing, grep the class the report describes across the
+   whole bundle and fix every hit: the report supplies the diagnosis, the
+   tree supplies the extent (three reports folded into one release named
+   one, two and eight sites; the classes had four, three and eleven). A
+   completeness claim in a report — "exactly those two", "the one site
+   the earlier fix missed" — is the reporter's scope, not a finding, and
+   the more carefully it is argued the more it discourages the one grep
+   that would settle it, so treat the phrase as the prompt to run it.
+   Record the class and the count in the commit and in the reply
+   ("replaced at 4 sites; the report named 1"): it tells the reporter the
+   report was read as a class, and gives the next person a search term
+   that matches reality — a partial fix under a closed issue leaves the
+   rest live and removes the search term that would have found it. Where
+   the class is mechanically checkable, leave a check behind — a gate
+   line, a lint rule — rather than only a fixed file, so the next instance
+   fails at the gate instead of being reported again. When the review REWORDS a
    contribution rather than merging its diff verbatim, the merge report
    lists each reworded point beside the original bullet — the same
    point-by-point relocation verification as a moved file, because a
@@ -677,16 +734,85 @@ review that grows a published skill by a hundred lines at an unchanged
 version number ships a changed skill under the one promise a version
 exists to keep.
 
-**Standing rule — a branch is cut together with its test plan.** The
-session that cuts a release/test branch classifies every change on it as
-*exercised naturally by a week of use* or *unlikely to happen
-naturally*, and for the second class writes a test plan — fixture,
-procedure and pass criterion per change — as an observation whose
-`skill:` list names the branch's skill. Filed that way, the plan reaches
-the next scheduled review by procedure rather than by anyone
-remembering, and the merge step above has the evidence it requires. A
-test period tests what the period's activity happens to touch; for
-everything else it is only a delay.
+**Standing rule — a branch is cut together with its test plan and its
+hold, by one command.** The session that cuts a release/test branch
+classifies every change on it as *exercised naturally by a week of use*
+or *unlikely to happen naturally*, and for the second class writes a test
+plan — fixture, procedure and pass criterion per change — as an
+observation whose `skill:` list names the branch's skill, created `open`
+and parked in the same turn. Filed that way, the plan reaches the merge
+review by procedure rather than by anyone remembering, and the merge step
+above has the evidence it requires. A test period tests what the period's
+activity happens to touch; for everything else it is only a delay. **In
+the same act, cutting the branch writes the hold into the publishing
+process's registry** — the skill's row gets `under_test: release/vX.Y.Z`,
+with the date and whatever value it replaced — and the merge in pass 1
+clears it in the same act; the principle is the observation-status rule,
+"set the status in the same turn you act", applied to a different state
+file. The hold is what stops the publishing cycle syncing the branch line
+onto `main` as a release; if the cut does not write it, nothing does, and
+its absence is indistinguishable from "not under test".
+
+Three writes, each specified as its own rule, is how the act gets
+performed with the writes it happens to remember (observed twice: first a
+branch cut with its test plan and no hold, the hold reconstructed at the
+next run from the staging ledger and the parked observation with no trace
+in the output that the mechanism had failed; then, two days later, the
+next branch cut with its test plan and neither the hold nor the manifest
+entry, the registry still naming the previous, abandoned branch, both
+repaired by a different session a day later). Under the second-violation
+rule the remedy is structural: **the cutting act is one scripted command
+whose side effects are the three writes** — the staging anchor with its
+manifest entry, the registry hold, and the parked test-plan observation —
+and which refuses to run if any of the three targets is unwritable. The
+script itself lives in the publishing process, which owns two of the three
+targets; this skill states the contract its output must satisfy, and the
+reader-side rules that give the contract teeth. **An absent hold field is
+an assertion, not a default**: a row that has ever carried one records
+when it was cleared and by which merge, so "no field" is distinguishable
+from "nobody wrote the field". The cycle **cross-checks the skill's
+staging directories** for a `release/` staging newer than the row's
+last-cleared date and asks rather than assumes when it finds one. And this
+review's reconciliation gate (Step 1) treats a `release/`-shaped staging
+with no manifest entry as a gate failure in the summary's first line,
+never as a copy to reconstruct silently.
+
+**The merge review is a fixed weekday, anchored on the install, not the
+cut.** The merge decision is taken in the publishing session, which runs
+on a fixed weekday; the merge review is therefore the publishing session's
+weekday that follows the INSTALL of the branch line by at least a few
+working sessions (the maintainer's observed choice: a Monday install →
+that same week's session, four days later) — not "cut date plus seven",
+which is arithmetic on the wrong event and lands on whatever day of the
+week the arithmetic says (observed: a test plan, a manifest entry, a
+registry row and a summary all naming the same date, a Sunday, corrected
+by the maintainer to the preceding publishing weekday). The test plan's
+`parked_until:` names that weekday's date explicitly, and every other copy
+of the date — manifest entry, registry row, summary — is derived the same
+way, so they cannot disagree. Where the install lands late in the week
+(fewer than three days before the weekday), the review runs to the second
+such weekday; the cutter states which was chosen and why in the test-plan
+observation, once, and the other copies follow it.
+
+**Standing rule — a review opens a freeze on the artefact.** When the
+user begins reviewing a staged skill, a release branch or a diff, stop
+producing new state on it. Defects found during the review are reported,
+not applied — "spotted X in what you are reading; fix now, or note for
+after?" — because the cost of re-reviewing is the reviewer's, so the
+choice is theirs. One artefact, one version, per review cycle: if
+something must change, say explicitly that the previous version is
+superseded and name what to re-read. Prefer an immutable review artefact
+— a diff written to a file is reviewable at the reader's pace and cannot
+be invalidated by later work — and offer it first, not as the recovery.
+Batch corrections behind the review, never in front of it. (Observed: a
+release branch cut, folded, merged, rebased twice, version-corrected and
+message-rewritten across one afternoon while the maintainer was trying to
+review it; every answer they received described a state that no longer
+existed by the time they acted on it, and the branch was deleted unused —
+the content survived only because it had been staged to the workspace
+separately.) Work done while someone is reviewing is not parallelism; it
+is contention for the same object, and every revision spends the
+reviewer's attention again from the beginning.
 
 Choose the anchor first: if `[today]/[skill-name]` already exists, apply the
 same-day rule under Delivery — integrate another writer's pending copy, or give
@@ -895,6 +1021,14 @@ review's base is then a staged copy whose provenance nobody re-derived);
 pass silently, and never infer it from an id counter — a monotonic id
 surfacing a number above the scan's maximum is a side effect, not a
 detection mechanism. The check is one `ls` against a list already in hand.
+Re-run the Step 1 duplicate-id check over the new listing as well: this
+re-scan is not redundant with Step 1, because the collisions it exists to
+catch are the ones created *during* the run (observed: Step 1 found and
+renumbered one collision; Step 6's re-scan found a second, new one —
+written mid-run by a parallel interactive session at an id the directory
+and the floor had both passed an hour earlier — that no earlier step could
+have seen). A run that trims this step as duplicate work removes the only
+check positioned after the writes it is checking for.
 
 Then, in each applied observation's frontmatter set
 `status: actioned`, `resolved: YYYY-MM-DD` (today), and
@@ -934,6 +1068,9 @@ applied with the outstanding skill named — never left implicit]
 ### Published skills
 [per published skill: release branch merged / held, with each change on
 it and its evidence (exercised naturally where, or check run and result);
+merge review date = the publishing weekday ≥ 7 days after INSTALL;
+a user-decided restructure staged: listed FIRST, with the line
+"published skill — install and the release are your call";
 community items included now, routed to the test branch, or declined
 with the reason; README and user-guide counts re-derived, old → new]
 
@@ -959,8 +1096,10 @@ an event that cannot occur turns the run's one deliverable into a hang.
 ## Constraints
 
 - Don't modify observation files beyond their `status`, `parked_until`,
-  `resolved`, and `resolution` frontmatter fields — **with one exception:
-  correcting a target that was recorded wrongly.** `skill:` and
+  `resolved`, and `resolution` frontmatter fields — plus `reference:` in the
+  one case the Approval policy names (a user-decided restructure of a
+  published skill, left `open` with its staged path recorded there) —
+  **with one exception: correcting a target that was recorded wrongly.** `skill:` and
   `proposes_skill:` are validated at write time, and that validation can
   return the wrong answer: a session in a stale checkout, or one resolving
   against the wrong install, judges an existing skill absent and files the
@@ -1056,7 +1195,17 @@ gate item still runs on such a file, so the exemption never becomes the
 hand-zip that skips the checks nobody was questioning.
 `scripts/validate-skill-bundle.py`
 asserts all seven and packs a well-formed bundle — run it where Python is
-available. Where the bundle ships a public extract of a private file
+available. It also enforces each skill's OWN declared core ceiling
+(`core_max_lines:` in its frontmatter, or a `.core-ceiling` file —
+`references/skill-authoring.md`, Lean Content), and **the pack step is
+never bypassed for a ceiling failure**: a skill that fails its own declared
+ceiling is trimmed back under it, moving content to a reference file, and
+re-validated; a skill with no declared ceiling cannot fail it and is only
+reported. Hand-packing a bundle to skirt the validator is the exact failure
+the gate exists to prevent (observed: three skills packed by hand with a
+mirror of `pack()` when a ceiling that was then a constant in the script
+failed them — every other check passed, and the constant was the defect,
+but the bypass was the wrong response to it). Where the bundle ships a public extract of a private file
 (this skill's `references/starter-principles.md`), run the
 confidentiality scan over that extract here too: it is the one file in
 the bundle whose content is copied from a private source, so the
@@ -1130,7 +1279,10 @@ test branch / declined, with the reason), per included item the
 reporter's GitHub login and numeric id, so the publishing run's commit
 can write the crediting trailer without going back to the API, and the
 version bump for published skills (the new version, or the intended
-bump where the version lives only in the repo's manifest). The manifest is
+bump where the version lives only in the repo's manifest) — and, where
+the staging is a user-decided restructure of a published skill (Approval
+policy), the word `restructure`, so the publishing run routes it to a
+release branch with a test plan rather than to `main`. The manifest is
 what the Session Start Protocol reads to announce "N staged updates
 awaiting review", so staged work is never quietly forgotten; the
 per-change summary is what lets the user review a full-file diff
