@@ -622,6 +622,13 @@ more than one. Then, before anything is presented:
   when the entry asks for the register that routine declares. Close what
   is already applied, with a resolution naming where it was found.
 
+- **Fix the system that owns the problem.** Before adding a skill rule,
+  check whether a code, configuration or CI change would remove the
+  failure. If so, recommend that fix: name the file, the change and how to
+  verify it. Keep a workaround instruction only while it is needed, and
+  identify the fix that will let a later review remove it. Implementing
+  that fix still follows the user's scope and the approval policy.
+
 - **Consolidate new-skill candidates by the problem they solve, not by
   name.** Independently logged proposals for the same skill will not look
   alike, because each is named after the task that surfaced it; eleven
@@ -1096,6 +1103,13 @@ they belong (never append an observations list at the bottom); preserve
 structure, voice, and attribution; place new rules where they logically
 live. Follow the editing rules in `references/skill-authoring.md` (live
 file as base, staging, diff-before-overwrite).
+
+Rewrite additions for the skill's reader rather than copying observation
+prose: put the rule first, use one idea per sentence and at most one example
+per change (`references/skill-authoring.md`, Lean Content — the example
+stays; bare rules get violated more than rules with context). Re-check the
+draft against the observation so the shorter wording preserves every
+required behaviour and verification step.
 
 **Scaling note — fan out when the apply-phase is large.** When the
 apply-phase spans more than ~3 skills or ~10 observations, delegate Step 5
