@@ -400,10 +400,11 @@ suspect reading back into the persistent source it came from; a guard
 placed after that write has protected nothing, and the floor that exists
 to stop the counter rewinding becomes the thing that rewinds it.
 
-**Three states, one empty result.** An instrument that *ran and found
-nothing*, one that *ran and broke*, and one that *was never permitted to
-run* all return the same thing, and only the first is a fact about the
-world. The third is the one with no natural tell: nothing is broken, so no
+**Four states, one empty result.** An instrument that *ran and found
+nothing*, one that *ran and broke*, one that *was never permitted to
+run* and one that *has not finished* (below) all return the same thing,
+and only the first is a fact about the world. The third has no natural
+tell: nothing is broken, so no
 `BROKEN` guard fires, and the refusal message is easy to summarise away as
 "nothing found". Where a command can be refused by a policy layer above the
 shell — see "A refused print is not an empty log" — the guard covers the
@@ -448,6 +449,26 @@ found". Observed: a session-listing subcommand piped to `head` returned
 zero bytes and exit 0; `--version` printed and was read as confirmation
 of "no sessions"; the same subcommand with an invalid id also returned
 zero bytes and exit 0.
+
+**A number read from a file another process is still writing is
+provisional until that process is known to have exited.** This is the
+fourth state, and the guard's own remedy does not catch it: a second
+count by different means reads the same unfinished source and is just as
+empty, so two independent probes agree on a false negative with full
+confidence — the population is fine, the parse is fine, only the timing
+is wrong. The partial file is not visibly partial: `grep`, `awk` and
+`sed` flush per line to a terminal and per block to a file or pipe, so a
+producer still running that has found nothing *yet* is byte-identical to
+one that finished and found nothing. A harness's interim-read affordance
+for a backgrounded command is not a completeness signal. So for this
+class the guard is not a second count but a liveness-and-exit check —
+the producer's exit status, or a process check (`pgrep` on its
+pattern) — run before the interim output is interpreted at all, never as
+a cross-check after a plausible-looking empty result. Observed: a
+recursive search over a large working tree, moved to a background task
+with its output file offered for interim reads, was read twice as zero
+hits; its three processes were still running twelve minutes later and
+had flushed nothing.
 
 **When the instrument is code written in this session, its input coverage
 is unverified by construction — print what it ingested, not only what it
