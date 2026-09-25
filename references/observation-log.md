@@ -931,6 +931,9 @@ mechanism can carry opposite operational conclusions, and the second is
 often the refinement, not the echo. Apparent agreement suppresses
 verification more effectively than disagreement does, so this rule binds
 hardest exactly where it feels least necessary.
+The same holds for a hand-maintained ledger or manifest read to judge an
+artefact against it — excerpt to find an entry, full text to judge one
+(`weekly-review.md`, "Staged-work reconciliation gate").
 
 ## Editing an existing observation
 

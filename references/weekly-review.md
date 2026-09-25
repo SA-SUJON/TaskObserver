@@ -520,6 +520,20 @@ a claim, not a state; the check is one `diff -rq` per skill and runs in
 seconds over a 20-skill batch. The Session Start Protocol (step 6) runs
 the same gate whenever it announces staged updates.
 
+**Read the ledger whole before reporting a difference.** An excerpt — the
+list lines, the headings, the hits of a pattern — is a valid way to FIND
+an entry and never a valid input for a verdict about one. A
+hand-maintained file records its exceptions as prose that deliberately
+does not look like an entry: a prune, a resolution, the line that says
+nothing is pending. So a pattern excerpt drops exactly the content that
+would refute a drift and keeps the content that suggests one, and its
+confidence is highest where its input is thinnest. (Observed: a session
+read the manifest as headings and list items, reported a round staged for
+two skills and present for one, and told the user the manifest needed
+clearing — twenty lines further down, in prose, it recorded the prune
+that had removed the copy and the statement that no entries were open.)
+Excerpt to search, full text to judge.
+
 **A `release/`-shaped staging with no manifest entry is a GATE FAILURE,
 surfaced in the summary's first line — never a copy to reconstruct
 silently.** The fallback sweep over recent date directories exists to catch
