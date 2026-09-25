@@ -426,7 +426,20 @@ act that happens outside any session, so no session observes it and
 nothing fires at install time: a ledger whose removal trigger is an event
 no session observes only ever grows. Bind the cleanup to the moment the
 ledger is read — reading is the only reliably recurring event, so the
-reading session owns it. For each entry in `skill-updates/PENDING.md`
+reading session owns it. First hold the tree against the manifest,
+every time: list the top-level entries of `skill-updates/` (everything
+but `PENDING.md`) and report, in one line, every entry no manifest
+entry names — "N staging directories without a manifest entry: …".
+Enumerate the listing rather than matching a date-shaped name:
+discriminated anchors (`<date>-<slug>`, `<date>.2`) and hand-over
+material are valid names, and an index shows only what someone entered,
+so a check that reads only the index reports every unentered item as
+absent — the cost is not lost work but the same work done again by a
+less informed session (observed: an inventory and a diff proposal
+staged for the next session's documentation pass, no entry written; the
+next session inventoried the same places from scratch and missed one
+the staged inventory covered). Then, for each entry in
+`skill-updates/PENDING.md`
 AND each skill directory under `skill-updates/<date>/` — always both,
 never the manifest alone: it may be missing entries, or missing
 entirely, and an absent manifest reads exactly like an empty one
@@ -1438,8 +1451,11 @@ the pair of states, not of the final artefact — a process that produces
 a new state without preserving the old one has produced a replacement,
 not a reviewable change.
 
-**Staging manifest.** Every delivery appends one entry to
-`[workspace folder]/skill-updates/PENDING.md` — creating the file when it
+**Staging manifest.** Every producer that writes under `skill-updates/`
+— a review delivery, an in-session apply, or hand-over material staged
+for another session (an inventory, a diff proposal, a brief) — appends
+one entry to `[workspace folder]/skill-updates/PENDING.md` in the same
+turn, creating the file when it
 is absent, and never starting it at today: on creation, list every skill
 directory already under `skill-updates/<date>/` that is not identical to
 live, so the manifest's first state describes the tree it indexes rather
@@ -1447,7 +1463,7 @@ than the one delivery that happened to create it (an appender that
 assumes the file is there writes nothing, as the aggregate-run rule
 above already says of a participant workspace; an index whose absence is
 indistinguishable from "nothing pending" cannot be the mechanism that
-stops work being forgotten). The entry carries the skill, the date
+stops work being forgotten). For a delivery, the entry carries the skill, the date
 directory, the producer (which session or scheduled run staged it), the
 observation ids applied, and a per-change summary
 (observation id → section touched → one-line rationale). The install
@@ -1475,7 +1491,11 @@ the manifest owns its cleanup.
 The manifest carries three kinds of entry and no others: provenance,
 install instructions, and — in an aggregate run over several logs — the
 **cross-log pointer** naming the anchor workspace where a shared skill
-was actually staged. The pointer is provenance for a staging that lives
+was actually staged. Hand-over material takes a provenance entry — what
+it is, who staged it, which session it is for, its status — with no
+install instructions, since there is nothing to install; it is staged
+work, and the gate's tree-against-manifest line is what finds it when
+the entry is missing. The pointer is provenance for a staging that lives
 elsewhere, so it belongs here; it is not follow-up work. Follow-up work
 is what the manifest never carries. Anything a review recognises as
 "check next time" — a sibling to
