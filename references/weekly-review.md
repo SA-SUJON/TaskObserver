@@ -233,7 +233,17 @@ scheduled task (`skill-observations/scheduler-registered.txt`, or the
 platform's scheduler queried directly: `crontab -l` on Unix; `launchctl
 list` on macOS where launchd is used; `Get-ScheduledTask` in PowerShell
 or `schtasks /Query` from any Windows shell; the app's Scheduled tasks
-page in Cowork); if found, skip. "No scheduler available" means the
+page in Cowork); if found, check that it covers **this** workspace before
+skipping: compare the workspace the task was registered for (recorded in
+`scheduler-registered.txt`, or read from the task definition) with the
+`[workspace folder]` this session resolved. Same path → skip, as before.
+Different path, or the task's workspace cannot be determined → do **not**
+skip. A registered scheduler that reads another workspace is not coverage
+for this one; it is the fork reporting itself healthy. Say so in one line,
+naming both paths and this log's open count, and route to "Several
+observation logs on one machine": logs over the same globally installed
+skills are a fork to consolidate, not a second queue to schedule.
+"No scheduler available" means the
 platform's own scheduler was queried and is absent — cron missing on
 Windows is not that; Task Scheduler is the scheduler there, and a check
 worded around cron alone marks every Windows install as schedulerless
@@ -248,8 +258,11 @@ environment provides (see the environment table in
 `weekly-skill-review`, use the draft prompt at
 `skill-observations/scheduled-task-draft.md` if present, then verify the
 registration actually succeeded (the scheduler lists the task, or the
-platform confirmed creation) BEFORE writing today's date to
-`scheduler-registered.txt`. If registration fails or can't be verified, do
+platform confirmed creation) BEFORE writing today's date **and the absolute
+workspace path the task was registered for** to `scheduler-registered.txt` —
+a marker holding only a date cannot answer the coverage question above, so
+the next session has to go and parse the task definition instead of running
+a comparison. If registration fails or can't be verified, do
 NOT write the marker — the marker would permanently suppress the fallback
 while no review ever runs. Tell the user registration failed and leave the
 fallback active. No → write today's date to
