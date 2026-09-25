@@ -290,6 +290,22 @@ task boundary. If you adopt only one line of the block, adopt the
 post-task check — in field use it turned an intermittently-activating
 install into a stably-recording one.
 
+That check is prose in the same file as the rule it guards, and it fails
+with it: whatever made a session skip the block's first paragraph makes it
+skip the third (observed: seven task boundaries and over a hundred tool
+calls with both configured tiers fired, neither the protocol nor the
+backstop run, and activation only when a different model read the same
+block mid-session). A backstop written in the medium of the rule it
+guards is one layer, not two. The second layer has to hang on an event
+the harness raises, not on the agent re-reading its instructions: where
+the harness offers a stop or turn-end hook, the objective check is cheap —
+the session used tools, and nothing under `observation-log/` or
+`checkpoints.log` has been written since it started — block once, with a
+one-line instruction, and stay silent otherwise. Classify each
+enforcement layer by what it needs in order to function: a filesystem
+write survives into any session type, a prose reminder survives only
+while the prose is being acted on.
+
 A third belt sits inside the protocol itself: its scan appends a dated
 line to `checkpoints.log` (SKILL.md, Session Start Protocol step 2), so
 the protocol leaves its own trace and a session that skipped it is
