@@ -65,10 +65,21 @@ the log can live on a machine that is asleep or offline at fire time.
 Define the policy up front: (1) check workspace reachability before
 anything else; (2) if unreachable, end gracefully with a one-line "review
 skipped — workspace offline" note, no retries — the next firing or the
-7-day in-session fallback catches up; (3) when setting up a scheduled
+7-day in-session fallback catches up — where "unreachable" means the
+probe found nothing there: a mount absent, a host asleep. A probe that
+fails with a permission or sandbox error on a path that exists is a
+third state, and it is not transient: the scheduled session's own
+sandbox denies the workspace, every later firing skips the same way,
+and nothing heals. Its note names the owner — "review skipped —
+workspace denied by the session sandbox; grant [ABSOLUTE PATH] in the
+task definition" (`references/environments.md`, "The access grant is
+part of the task definition") — because an offline note for a policy
+denial sends the reader to wait for a machine that is already on; (3)
+when setting up a scheduled
 review, bake this policy into the scheduled task's prompt, so fresh
-sessions inherit it without rediscovery. A permission failure mid-run is
-handled the same way: skip the gated step, record it as a manual
+sessions inherit it without rediscovery. A permission failure mid-run —
+after the probe has succeeded — is handled the same way: skip the gated
+step, record it as a manual
 follow-up, and still emit the final report — a blocked step N must never
 cost the report for steps 1 through N-1.
 
@@ -286,7 +297,14 @@ the next session has to go and parse the task definition instead of running
 a comparison. If registration fails or can't be verified, do
 NOT write the marker — the marker would permanently suppress the fallback
 while no review ever runs. Tell the user registration failed and leave the
-fallback active. No → write today's date to
+fallback active. A listed task is a registration, not a working setup:
+the registration carries whatever allowed-directory grant the harness's
+sandbox needs for the workspace root, the first firing's own report is
+the completion check, and a first run that ends with a denial note — the
+workspace exists, the task's sandbox cannot reach it — is a missing grant
+on the task definition, never an outage the next firing catches up on
+(`references/environments.md`, "The access grant is part of the task
+definition"). No → write today's date to
 `scheduled-review-decline.txt` (suppresses for 30 days; repeated fallback
 firings within the window re-surface the offer). No scheduler available in
 this environment (per the definition above) → skip silently.
