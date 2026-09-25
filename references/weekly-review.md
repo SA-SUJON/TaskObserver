@@ -566,7 +566,15 @@ pointing at a decision that may be settled without it.
 
 **Step 4 — cross-check principles, and audit the families for drift.**
 Flag every skill that doesn't yet comply with each active cross-cutting
-principle.
+principle. A missing `skill-observations/cross-cutting-principles.md` is
+abnormal, not empty: Session Start step 1 creates it, and it is the one
+artefact of that step nothing reads until this step, so its absence has
+had no observable consequence until now — a step that runs without
+leaving a trace is indistinguishable from a step that was skipped
+(observed: months of daily use, a hundred logged observations, the file
+never created). Create it from the template in
+`references/skill-authoring.md` now, say so in the summary's first line,
+and log the skipped step as an observation.
 
 **Adding or materially editing a principle carries its starter-set
 verdict in the same act.** Where a bundle ships a public,
