@@ -238,8 +238,23 @@ legitimate (see the multi-log block in `weekly-review.md`).
 **Before creating a log, search for one.** Check the plausible anchor
 candidates — the pinned path, the project identity root, the
 environment-managed persistence directory, the shared folder, the other
-agent's equivalent — for an existing `skill-observations/` workspace. If
-one exists, adopt it, or consolidate deliberately with the user. A fresh
+agent's equivalent — for an existing `skill-observations/` workspace.
+"The pinned path" has more than one source: the instruction file, and
+any registered session-start hook. Grep the harness settings and the
+installed plugins' hook manifests for the skill's name, then read the
+path each hook script derives — a hook that counts observations
+somewhere is a pin whether or not the instruction file names it
+(observed: the instruction file had no pin, a user-scope hook derived
+the workspace from the home directory, the probe checked only the
+documented defaults and created a second workspace fifteen minutes
+after the real one; the hook kept counting the original, so every
+observation written to the new path was invisible to it). Where a
+system already reads or writes state, that location is authoritative
+and the documented defaults are the fallback; an existence probe over
+the defaults alone reports "not found" for every install that deviated
+from them. Never create a workspace while a hook or config names a
+different root: reconcile first. If one exists, adopt it, or
+consolidate deliberately with the user. A fresh
 empty log beside a populated one is a silent fork: both grow
 independently, ids collide, and each session sees only half the history.
 Consolidating a shard is mechanical: carry over only the entries still
