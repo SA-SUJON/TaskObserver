@@ -574,8 +574,9 @@ applies to like a skill (staged, never edited in place), instead of
 remapping the entry onto the nearest skill. An observation may appear in
 more than one. Then, before anything is presented:
 
-- **Presence check, here, against the real target.** Step 5 greps the
-  staged copy for each improvement before writing; run that same
+- **Presence check, here, against the real target — and against the
+  Issue, not only the suggestion.** Step 5 greps the staged copy for
+  each improvement before writing; run that same
   already-applied / partially-applied / outstanding classification here
   too, before anything is presented. In an interactive review the user
   approves at this step, so Step 5 never sees an entry the user was asked
@@ -1010,9 +1011,27 @@ the staged copy for the substance of each suggested improvement and
 classify it as already-applied / partially-applied / outstanding — an
 `open` status is not evidence the work is outstanding, and applying an
 already-applied observation over a section that has since been refined
-regresses the skill in the name of improving it. Mark already-applied
-entries `actioned` with a resolution noting that a prior session applied
-them, and leave the section alone. Then
+regresses the skill in the name of improving it. Classify against the
+**Issue** as well as the suggestion: `already-applied` needs both — the
+suggestion's substance is present AND the failure the Issue describes
+can no longer occur. Where the suggestion is present but the failure
+can still occur, the entry is `partially-applied`, whatever the
+suggestion asked for; for an observation about a manual step or a
+missing automation the test is one question — after this change, does
+anyone still have to do the step by hand, and if an automation exists,
+what calls it? (Observed: a script that already did the step existed;
+the observation asked only that it be documented; the paragraph was
+written, the entry marked `actioned`, nothing called the script, and
+the backlog it was meant to clear built up again until the user asked
+why — the edited skill's own rule that a check started by hand is not a
+check sat a few paragraphs from the edit.) An observation closes on its
+problem, not on its proposal. Mark already-applied entries `actioned`
+with a resolution noting that a prior session applied them, and leave
+the section alone. A `partially-applied` entry names the remainder in
+`resolution:` ("suggestion applied; issue still open: <what can still
+happen>") and logs that remainder as its own observation in the same
+turn — the carrier pattern in `observation-log.md` — so it stays in the
+queue after this one archives. Then
 produce an updated SKILL.md: integrate insights into the sections where
 they belong (never append an observations list at the bottom); preserve
 structure, voice, and attribution; place new rules where they logically
@@ -1157,8 +1176,12 @@ check positioned after the writes it is checking for.
 Then, in each applied observation's frontmatter set
 `status: actioned`, `resolved: YYYY-MM-DD` (today), and
 `resolution: "Staged for [skill-name] at skill-updates/<anchor>/[skill-name] (weekly review)"`
-— editing only those fields, in that one file. The resolution names the
-staged path deliberately: `actioned` at this point means "applied to a
+— editing only those fields, in that one file. An entry Step 5 classed
+`partially-applied` is marked the same way, with the remainder named in
+`resolution:` and its carrier observation already written (Step 5): a
+resolved entry is the one thing no later step re-reads, so the
+remainder must live in the queue, never in the resolved file. The
+resolution names the staged path deliberately: `actioned` at this point means "applied to a
 staged copy", and handing an artefact over and having it taken up are two
 different facts — the first must not close the status of the second. The
 staged path is what lets the next review find every observation whose
