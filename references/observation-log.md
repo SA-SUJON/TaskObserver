@@ -71,7 +71,7 @@ means this directory.
 
 | Field | Meaning |
 |---|---|
-| `id` | Integer; matches the `NNNN-` filename prefix. Never reused. |
+| `id` | Integer; matches the `NNNN-` filename prefix — four digits, zero-padded (`printf '%04d'`, as the snippet and the script write it), so a listing sorts numerically and a clash is visible in it; `63-` beside `0063-` is one id written by something other than the snippet. Never reused. |
 | `title` | Short descriptive title. |
 | `status` | `open`, `actioned`, `declined`, `superseded` (a later observation found this one's mitigation does not work; `resolution` names it) or `parked`. A missing status is read as `open`, never as nonexistent. |
 | `parked` (status value) | Decided, but blocked on an external precondition: the entry is sound and no longer awaiting a judgement, so reviews drop it from the work queue and never re-escalate it. It is not resolved, so it does not archive — see Archival below. It stays in `observation-log/` until its `parked_until:` condition is met (set it back to `open`) or it is genuinely resolved. Recording a park as free text while leaving `status: open` does not work: nothing classifies on prose, so the entry stays in the queue and is re-raised at every review. |
@@ -975,6 +975,22 @@ them** — when the dirt in the tree is the log, a commit is always the
 cheaper way to get clean. Scope any dirty-tree guard to exclude
 `skill-observations/` rather than teaching sessions to clear it, and never
 run `git clean` with that directory in scope.
+
+**A log synced between two installs is a multi-writer log with no shared
+read.** The id snippet takes the maximum over the files this install can
+see; ids another install has minted and not yet pushed are not unread,
+they are absent, so both mint from their own maximum and every guard on
+either side passes honestly (observed: fourteen colliding ids in one
+push after a week of logging on two machines, nine of them invisible to
+a bare listing because one side wrote `63-` and the other `0063-` — the
+review's duplicate-id check strips the padding and finds them). And
+`.id-floor` is one file recording a per-writer fact, so it merges as a
+conflict between two correct values: resolve it upward, never by picking
+a side. Two installs sharing a log through a repository serialise their
+writes through it — pull before every write, push after it — and treat
+a collision found at the next review as the expected cost of a missed
+pull, renumbered exactly as Step 1 says; ownership of the file is not a
+condition.
 
 ## Archival
 
