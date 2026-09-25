@@ -433,6 +433,23 @@ cause it. So a rule anchored on "once it arrives it stays" fails the same way
 a rule anchored on "it arrives first" does. Do not treat an earlier turn's
 config as still in force.
 
+**The skill listing lags the same way, and an absence verdict expires the
+same way.** The instruction can be present and fire on a turn where the
+skill it names does not yet resolve against the harness's own listing of
+invocable skills — right after the instruction was added mid-session, or
+in a harness that builds its available-skill list once near session
+start. The honest response on that turn is a disk check and "not
+installed", and that verdict is true only for the turn it was made on;
+nothing revisits it, so when the listing catches up every tool call in
+between went unobserved and the earlier claim stands uncorrected
+(observed: the skill appeared in the listing four turns after the
+verdict, and the protocol first ran then). So a "not installed" verdict
+names the probe it came from — the listing lookup, or a disk check of the
+skill directory — because the two disagree exactly here, and it holds for
+one turn: re-check the listing on each later turn that makes a tool call,
+and run the Session Start Protocol in full the first time the skill
+resolves.
+
 The durable form: **a guard against an activation config failing to load
 cannot live inside the thing that config loads.** The guard in SKILL.md step
 1 is in `task-observer`, which is loaded *because* the config says to load
@@ -451,11 +468,14 @@ be loaded directly.
 
 **Log the cause, not just the miss.** When a session-start load is skipped,
 the fix depends on which of these it was: *absent* (config unreachable),
-*present-but-not-yet-injected* (late — record the turn it arrived), *present
-and skipped* (attention), or *loaded-but-not-run* (the invocation succeeded
-and the protocol inside it never executed). Only the first two are fixed by
-changing the channel; the last two are not, and an environmental cause found
-first will otherwise absorb the whole explanation.
+*present-but-not-yet-injected* (late — record the turn it arrived),
+*present-but-not-yet-resolving* (the instruction fired and the skill was
+not in the listing — record the turn it appeared), *present and skipped*
+(attention), or *loaded-but-not-run* (the invocation succeeded and the
+protocol inside it never executed). Only the first two are fixed by
+changing the channel, and the third by re-checking the listing; the last
+two are not environmental, and an environmental cause found first will
+otherwise absorb the whole explanation.
 
 ### The probe rides inside the first batched call
 
