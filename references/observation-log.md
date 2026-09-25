@@ -94,6 +94,20 @@ means this directory.
 | `skill_qualifiers` | Optional map: skill name → the section or part of that skill meant. |
 | `migration_note` | Present only on files converted from a legacy log where the converter refused to guess; clear it once reviewed. |
 
+**Field names and status values are exact.** `skills:`, `proposed_skill:`
+and `sibling_checked:` are read by nothing: an entry carrying one of them
+sits under no skill at all, indistinguishable from `skill: []`, and a
+review bucketing by target routes it nowhere. `status: OPEN` is not one of
+the five values — a reader that happens to case-fold hides the defect, it
+does not license it. `id:` is the integer the snippet printed, never the
+zero-padded filename prefix. A scan that parses every header and checks
+none of them against this table touches such an entry on schedule and
+reports a clean count (observed: an entry written without the template
+sat four days under `skills:`, with `status: OPEN` and no `type:`,
+`siblings_checked:` or `area:`, beside a scan that reported every header
+parsed). The failure produces a smaller number, never an error, which is
+why a near-miss name is flagged rather than skipped wherever a check runs.
+
 ### Unquoted `: ` in a prose value — how far it drifts before anyone notices
 
 The core states the rule (quote every prose value). This is the measurement
