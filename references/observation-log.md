@@ -288,6 +288,18 @@ a literal path, and halt on the disagreement. A guard enumerated per
 snippet is unguarded for the next snippet by construction; a guard stated
 as a property of instruments covers the one nobody has written yet.
 
+**A guard that separates "empty" from "non-empty" cannot catch a
+partial read, and partial reads are the common failure of text-shaped
+tool output.** A listing that returns some of the directory passes every
+zero-check and yields a plausible, wrong maximum. Where a monotonic
+invariant is already in the same computation — a floor file is by
+definition never above the highest id issued — assert against it rather
+than against a sentinel: a computed maximum below the recorded floor is
+proof the read was partial, whatever the cause. And never write a
+suspect reading back into the persistent source it came from; a guard
+placed after that write has protected nothing, and the floor that exists
+to stop the counter rewinding becomes the thing that rewinds it.
+
 **Three states, one empty result.** An instrument that *ran and found
 nothing*, one that *ran and broke*, and one that *was never permitted to
 run* all return the same thing, and only the first is a fact about the
