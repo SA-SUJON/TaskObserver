@@ -644,7 +644,9 @@ re-check exists, do not record the value — record how to obtain it.
    and establish freshness PER COPY from evidence — mtime, content
    probes, hashes — never from role ("the repo", "the live version");
    then pick the base explicitly. During multi-pass work in interactive
-   sessions, re-verify the baseline before interpreting any diff: a diff
+   sessions, snapshot the staged copy before each pass (weekly-review.md,
+   Delivery — an unversioned staging tree keeps no other baseline) and
+   re-verify the baseline before interpreting any diff: a diff
    that SHRINKS against a supposedly-fixed baseline means the baseline
    absorbed earlier changes (e.g. the user installed a staged update
    mid-session), not that edits vanished. Treat unexpected diff-stat

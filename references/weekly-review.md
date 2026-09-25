@@ -982,7 +982,9 @@ common way a staged skill's frontmatter stops parsing — see
 that any Python check run inside the staged tree runs with
 `PYTHONDONTWRITEBYTECODE=1` (a `py_compile` there leaves a `__pycache__/`
 the pre-delivery gate rejects, on a mount that cannot unlink it without
-the delete grant), and an explicit rule that subagents do not change
+the delete grant), whether the pass is a content pass or a reformat —
+never both in one edit, and a snapshot of the staged directory taken
+before it (Delivery) — and an explicit rule that subagents do not change
 any observation's status and do not write observations: a finding worth
 logging goes in the subagent's final report and the parent writes it,
 because two writers watching one task from two vantages log one finding
@@ -1333,6 +1335,30 @@ from this paragraph. (Observed: a second apply round for one skill started
 the same evening the first had been installed; the date-keyed anchor pointed
 at the installed copy, and only a manual check of the manifest state
 prevented seeding over it.)
+
+**The previous staged state is part of the deliverable — snapshot
+before any second pass, and never let a reflow ride along with
+content.** The staging tree is not under version control and the seed
+is the only baseline the procedure takes, so a second pass over a staged
+copy — a follow-up apply round, a density pass, a correction the user
+asked for — overwrites the one state the reviewer's diff needed; the
+reconciliation gate compares staged against live, which answers "was
+this installed?", never "what did this pass change?". Before any pass
+that rewrites a staged skill, copy the directory beside itself as
+`<anchor>/<skill-name>.pre-<passname>`, named so the gate's directory
+sweep and the keep-two prune cannot mistake it for a staged copy; it
+goes when its anchor goes. And keep whitespace passes out of content
+passes: a re-wrap moves every line, so a plain diff reports total churn
+and the few lines that actually changed are invisible in it (observed:
+a delegated density pass cut ~4% of the words and re-wrapped every file
+to a uniform width to make its line count honest — two files it changed
+by 0% and 1.2% showed as fully rewritten, and no pre-pass baseline
+existed). Content first, reviewed; reformat as a separate step whose
+diff can be discarded wholesale; a brief that delegates one says which
+of the two it is and forbids the other. Reviewability is a property of
+the pair of states, not of the final artefact — a process that produces
+a new state without preserving the old one has produced a replacement,
+not a reviewable change.
 
 **Staging manifest.** Every delivery appends one entry to
 `[workspace folder]/skill-updates/PENDING.md` — creating the file when it
