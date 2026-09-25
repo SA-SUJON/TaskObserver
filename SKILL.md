@@ -232,28 +232,29 @@ was handled without its reference loaded, log an observation.
    so it verifies a working setup and structurally cannot detect the
    missing one — it is not the safety net for a never-activated install.
    That case is caught only from outside the runtime: the install-time
-   verification and the external diagnostic in `references/environments.md`
-   (no observation-log directory after sessions of real work), and the
-   review's regression check for a tier that was present and is gone.
+   verification and external diagnostic in `references/environments.md` (no
+   observation-log directory after sessions of real work), and the review's
+   regression check for a tier now gone.
 5. **Concurrency.** There is no shared log file to guard: each observation
    is its own file, so creating one never collides with another session's
    entry. Before changing an existing observation's *status*, re-read that
    one file first — a parallel review may have resolved it.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
-   one line, any that no longer resolve — a deleted skill can accumulate
-   dozens of observations before a review notices. Say what you resolved
-   against (this checkout, this install): an unresolved target is a fact
-   about where you looked, not about the world.
+   one line, any that no longer resolve — and any that resolve but cannot
+   run, because presence in a listing is not capability (`references/skill-
+   authoring.md`, "Runtime prerequisites"). A deleted skill accumulates
+   observations unnoticed; a dead one more so. Say what you resolved against
+   (this checkout, this install): an unresolved target is a fact about where
+   you looked, not about the world.
    If `skill-updates/PENDING.md` lists staged updates, reconcile the list
    before announcing it — installation happens outside any session, so no
-   session observes the install itself, and the session that reads the
-   ledger owns its cleanup. `diff -rq` each staged copy against live and
-   classify it; a bare "differs" is not a verdict, because live moves on
-   legitimately. The classification and its cases are in
-   `references/weekly-review.md` ("Staged-work reconciliation gate") —
-   load it before judging any entry. Then say "N staged updates awaiting
-   review" in one line.
+   session observes it, and the session that reads the ledger owns its
+   cleanup. `diff -rq` each staged copy against live and classify it; a
+   bare "differs" is not a verdict, because live moves on legitimately. The
+   classification and its cases are in `references/weekly-review.md`
+   ("Staged-work reconciliation gate") — load it before judging any entry.
+   Then say "N staged updates awaiting review" in one line.
 7. **First run.** If the log is empty and the project has history (handover
    or decision docs, commit history, test scripts, an existing CLAUDE.md —
    largely a record of corrections nobody logged), offer a one-off backfill

@@ -20,6 +20,7 @@ Load this before creating any skill or making substantial changes to one.
 - Verifying relocations and restructures
 - Trial design — measuring whether a behaviour fires unprompted
 - New skills
+- Runtime prerequisites — declare what the skill needs to be able to run
 - Retiring skills — harvest before you retire
 - Principle Propagation
 
@@ -978,6 +979,57 @@ reconciliation notes, not the diffs, are the deliverable the maintainer
 reviews. Two independent movers flagging the same ambiguity means the
 brief is the defect: fix the brief and re-issue rather than adjudicating
 the outputs.
+
+## Runtime prerequisites — declare what the skill needs to be able to run
+
+A skill that drives something outside itself — a CLI binary, a daemon, an
+API key, a container runtime — is only as installed as the thing it drives.
+Presence in the skill listing says the files are there. It says nothing
+about whether invoking them can work.
+
+The failure this produces is specific and expensive: the agent reads a
+full, confident description, selects the skill for the task it names, and
+discovers the missing prerequisite only partway through the work. It reads
+as the agent's error rather than the inventory's, and the task it was
+chosen for is already half-done. In one reported estate, nine skills for a
+single security tool sat in the listing indistinguishable from working
+ones; the tool needed Docker, which was absent, and a paid API key outside
+the user's subscription. The adopter's only defence was a hand-written
+prohibition in `CLAUDE.md` naming all nine — a rule that has to be read and
+obeyed, rather than a fact the system knows.
+
+The same estate showed why this has to be a required element rather than
+good practice: an audit found 2 of the 9 members declared the prerequisite
+in their own `SKILL.md` and 7 did not. Left optional, a family drifts.
+
+**Required for any skill that drives an external tool.** Declare the
+prerequisites as *checkable facts*, so that something other than a human
+reader can evaluate them:
+
+```yaml
+requires:
+  - binary: docker          # on PATH
+  - env: OPENAI_API_KEY     # set and non-empty
+  - service: http://localhost:11434   # reachable
+```
+
+Three forms cover nearly everything: a binary on `PATH`, an environment
+variable that is set, and an endpoint that answers. Each is one cheap
+command. Anything that cannot be reduced to one of those is a prose note in
+the skill body, not a declaration — a check nobody can run is worse than an
+honest sentence, because it looks like a guarantee.
+
+**What consumes it.** Session Start step 6 resolves `skill:` targets and
+reports the ones that do not resolve; with this block it can also report the
+ones that resolve *and cannot run*. A dead target and a deleted target both
+mean "observations are accumulating against something that will never act on
+them", and for any skill driving an external tool the dead one is the
+commoner case.
+
+**The general principle.** Presence in a registry is not capability. Any
+inventory an agent selects from needs a liveness dimension, because the
+failure it otherwise produces — confidently choosing a listed thing that
+cannot run — is invisible at selection time and expensive at use time.
 
 ## Retiring skills — harvest before you retire
 
