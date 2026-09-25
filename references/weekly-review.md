@@ -411,8 +411,12 @@ nothing fires at install time: a ledger whose removal trigger is an event
 no session observes only ever grows. Bind the cleanup to the moment the
 ledger is read — reading is the only reliably recurring event, so the
 reading session owns it. For each entry in `skill-updates/PENDING.md`
-(and, where the manifest may be missing entries, each skill directory
-under recent `skill-updates/` dates), run `diff -rq` of the staged copy
+AND each skill directory under `skill-updates/<date>/` — always both,
+never the manifest alone: it may be missing entries, or missing
+entirely, and an absent manifest reads exactly like an empty one
+(observed: eight staged skills across three dated folders, invisible for
+ten days, because no session had ever created the file) — run `diff -rq`
+of the staged copy
 against the live skill and classify THREE ways — three-way because live
 legitimately moves on, so a bare "differs" is not a verdict:
 
@@ -858,6 +862,19 @@ the content survived only because it had been staged to the workspace
 separately.) Work done while someone is reviewing is not parallelism; it
 is contention for the same object, and every revision spends the
 reviewer's attention again from the beginning.
+
+**Enumerate every staged copy of the skill before seeding, whether or
+not it exists live.** `find "[workspace folder]/skill-updates" -maxdepth 2
+-name "[skill-name]" -type d` (`find`, never a bare glob) and `diff -rq`
+every hit against live — not only today's anchor. The presence check
+below is defined against a staged copy of the *live* file, so it is
+structurally blind to a draft that never went live, and that is the work
+most at risk of being lost. Two ways it bites: a skill authored "from
+scratch" while an uninstalled draft of the same name already carried
+rules the new file lacked; and a skill seeded from live while an older
+staged draft held a whole section live never received — installing the
+fresh copy would have dropped it. A hit in state (c) of the
+reconciliation gate is the base for this staging, as the gate says.
 
 Choose the anchor first: if `[today]/[skill-name]` already exists, apply the
 same-day rule under Delivery — integrate another writer's pending copy, or give
@@ -1318,7 +1335,15 @@ at the installed copy, and only a manual check of the manifest state
 prevented seeding over it.)
 
 **Staging manifest.** Every delivery appends one entry to
-`[workspace folder]/skill-updates/PENDING.md`: the skill, the date
+`[workspace folder]/skill-updates/PENDING.md` — creating the file when it
+is absent, and never starting it at today: on creation, list every skill
+directory already under `skill-updates/<date>/` that is not identical to
+live, so the manifest's first state describes the tree it indexes rather
+than the one delivery that happened to create it (an appender that
+assumes the file is there writes nothing, as the aggregate-run rule
+above already says of a participant workspace; an index whose absence is
+indistinguishable from "nothing pending" cannot be the mechanism that
+stops work being forgotten). The entry carries the skill, the date
 directory, the producer (which session or scheduled run staged it), the
 observation ids applied, and a per-change summary
 (observation id → section touched → one-line rationale). The install

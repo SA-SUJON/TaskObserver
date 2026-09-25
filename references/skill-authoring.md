@@ -1009,7 +1009,12 @@ their updates. One search of the upstream repository (those paths, plus
 "skill" in the README and release notes) settles it. If an official skill
 exists, install it and put only the local delta into a companion, exactly
 as for any other upstream-maintained skill (weekly-review.md, Step 2);
-if it does not, author, and consider offering the result upstream.
+if it does not, author, and consider offering the result upstream. And
+before authoring any skill from scratch, look for an uninstalled draft
+under `[workspace folder]/skill-updates/*/<skill-name>/` (`find`, as in
+weekly-review.md Step 5): a staged copy that never went live has no live
+file to diff against, so nothing else in the procedure surfaces it, and
+a from-scratch draft beside it drops whatever it carried.
 
 Use the skill-creator when available, passing the observation(s) as the
 brief. Determine type early: open-source → strip and generalise; internal →
