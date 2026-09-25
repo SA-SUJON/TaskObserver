@@ -430,6 +430,25 @@ Apply it to **any command whose empty or zero output is about to become a
 claim**: pair it with a second probe by different means, or state the
 result as "the probe returned nothing" rather than "there is nothing".
 
+**When the instrument is an external process, the independent probe
+exercises the same code path.** For a literal path the second count is
+another read of the same directory by other means. For a CLI invoked
+from a non-interactive shell, "different means" is satisfied to the
+letter by a sibling subcommand — `--version` prints, so the binary
+works — and that proves nothing about whether the subcommand under test
+can report to a pipe at all: a subcommand that renders only through an
+interactive terminal UI prints nothing and exits 0 when piped, for a
+valid result, an invalid one and no result alike, byte-identical to a
+genuine empty answer. So the probe is the same subcommand with a
+known-bad argument. If that also returns empty with a success exit, the
+path is TTY-gated (or otherwise silent under this invocation), the
+instrument cannot answer the question, and the correct output is to
+hand the command to an interactive terminal rather than report "none
+found". Observed: a session-listing subcommand piped to `head` returned
+zero bytes and exit 0; `--version` printed and was read as confirmation
+of "no sessions"; the same subcommand with an invalid id also returned
+zero bytes and exit 0.
+
 **When the instrument is code written in this session, its input coverage
 is unverified by construction — print what it ingested, not only what it
 found.** A shipped snippet has at least been run against the population
