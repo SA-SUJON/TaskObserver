@@ -417,15 +417,16 @@ entirely, and an absent manifest reads exactly like an empty one
 (observed: eight staged skills across three dated folders, invisible for
 ten days, because no session had ever created the file) — run `diff -rq`
 of the staged copy
-against the live skill and classify THREE ways — three-way because live
+against the live skill and classify FOUR ways — because live
 legitimately moves on, so a bare "differs" is not a verdict:
 
 - **(a) identical** → installed; remove the manifest entry.
 - **(b) live strictly newer / a superset of the staged copy** →
   superseded; remove the entry with a note.
-- **(c) the staged copy carries content absent from live** → NOT
-  installed; surface it, and treat the staged copy — not live — as the
-  base for any new staging of that skill in this review. Also list, in
+- **(c) the staged copy carries content absent from live, and live
+  carries nothing absent from the staged copy** → NOT installed; surface
+  it, and treat the staged copy — not live — as the base for any new
+  staging of that skill in this review. Also list, in
   the summary, the observations whose `resolution:` names that staged
   path (`find observation-log -name '*.md' -exec grep -l
   "skill-updates/<anchor>/<skill>" {} +` — `find`, never a bare glob, which
@@ -437,6 +438,12 @@ legitimately moves on, so a bare "differs" is not a verdict:
   and a staged copy that reaches its SECOND review un-installed is
   escalated as a decision (install it, or discard it and re-open its
   observations) rather than carried forward a third time.
+- **(d) each side carries content the other lacks** → diverged; the
+  action is a MERGE — live as the base, the staged-only content folded
+  back in — never a wholesale substitution of either side. After the
+  merge, assert that every heading from BOTH inputs is present in the
+  result and none is duplicated; the merged copy then takes (c)'s
+  bookkeeping (surface it, list its observations, count its reviews).
 
 **(b) against (c) is decided per differing hunk, never per file.**
 `diff -rq` settles only (a). For every line present only in the staged
@@ -456,6 +463,23 @@ second copy is written, this one says how the first is then classified.
 A procedure that mandates an N-way classification owes the reader the
 discriminating test, not only the N labels; left to invent one, each
 implementer separates the first case and merges the rest.
+
+**(c) against (d) needs the other difference set.** The per-hunk test
+reads only what the staged copy has that live lacks; compute what live
+has that the staged copy lacks too, before naming the case — a non-empty
+first set with an empty second is (c), both non-empty is (d). Compare
+heading sets in each direction (`grep '^#'` over each file, each list
+checked against the other) rather than reading an interleaved line diff,
+which is what invites the shortcut. Categories ordered by "which side is
+ahead" are exhaustive only while exactly one side has moved, and a dated
+staging folder is multi-writer by construction, so both having moved is
+the normal case, not the exotic one. Size does not order them either:
+the larger file is the one that grew, which says nothing about what it
+lost. (Observed: a staged copy three weeks old with four sections only
+it carried, against a live file with seven only it carried; (c) as then
+written would have discarded live's seven, and the file-size reading
+argued for (b), which would have discarded the staged four. The merge
+kept all eleven.)
 
 Reconcile in BOTH directions every time: lingering-done (installed but
 still listed) and missing-done (staged but never installed) fail
@@ -888,7 +912,8 @@ scratch" while an uninstalled draft of the same name already carried
 rules the new file lacked; and a skill seeded from live while an older
 staged draft held a whole section live never received — installing the
 fresh copy would have dropped it. A hit in state (c) of the
-reconciliation gate is the base for this staging, as the gate says.
+reconciliation gate is the base for this staging, as the gate says; a
+hit in state (d) is merged onto live first, and the merge is the base.
 
 Choose the anchor first: if `[today]/[skill-name]` already exists, apply the
 same-day rule under Delivery — integrate another writer's pending copy, or give
@@ -1308,8 +1333,8 @@ staging keeps happening and installation waits — lost the oldest, and the
 reviewable work in it, to a rule that reads as tidying. Classify each
 copy with the reconciliation gate's `diff -rq` first: prune only copies
 that came back **(a) identical** or **(b) superseded**; a copy in state
-(c) is uninstalled work and is kept whatever its age, and named in the
-summary so it does not accumulate invisibly. For the prunable
+(c) or (d) is uninstalled work and is kept whatever its age, and named
+in the summary so it does not accumulate invisibly. For the prunable
 ones, **request the delete grant on the target directory, then delete —
 never rename into a holding folder** (if the permission stream fails in
 an autonomous run, leave them in place and name them in the report as
