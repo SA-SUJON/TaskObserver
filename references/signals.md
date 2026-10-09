@@ -180,7 +180,11 @@ adds nothing (act now). A criterion you *can* name must also be able to occur:
 ask who or what would have to act for it to fire, and whether that party has a
 reason to do exactly the opposite — a deferral whose criterion cannot occur is
 indistinguishable from a silent drop, only more expensive, and it looks better
-than a vague one because it is precisely phrased. Then ask what the delay
+than a vague one because it is precisely phrased. Probe the action as well
+as the evidence: when deferring, check read-only that the deferred action
+can be taken at all (the feature exists, the plan includes it, the
+permission is there) and record the result; a failed probe means deciding
+now and naming the substitute. Then ask what the delay
 costs — if a known-defective
 state stays live meanwhile, the burden of proof is on deferring, not on acting.
 A deferral is a decision and needs the same justification as acting; "more
