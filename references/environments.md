@@ -155,6 +155,9 @@ Loading a skill is not complete until you have queried the observation
 log for OPEN observations naming it and read their bodies:
   find "[ABSOLUTE PATH]/skill-observations/observation-log" -maxdepth 1 \
     -name '*.md' -exec grep -l "skill:.*<skill-name>" {} +
+(<skill-name> is the bare name: drop a plugin: prefix, up to the last
+colon. A qualified pattern misses every entry filed under the bare name
+and reports a clean zero; the bare one matches both spellings.)
 (Use find, not a bare *.md glob. Under zsh an unmatched glob is an error,
 so on an empty log the command never runs and the enclosing block aborts —
 and 2>/dev/null does not help, because the redirection belongs to a
@@ -176,6 +179,11 @@ skills you built to load. A checkpoint line written without the load is a
 false record. Before writing to any file a skill reads at run time (a
 state file), load that skill: a state file that describes itself is not a
 substitute for the skill that owns it.
+
+Where scripts run, the lookup and its checkpoint line are one command:
+  bash "<skill directory>/scripts/skill-load.sh" "[ABSOLUTE PATH]" <skill-name>
+The Skill invocation and that call are ONE batch — emit them together,
+one call per skill loaded, never the call in a later batch.
 
 The task-observer workspace for this project is:
   [ABSOLUTE PATH]
@@ -213,9 +221,10 @@ compaction, when the skill body is out of context.
 
 `<skill directory>` is the installed skill's own directory (the one
 holding `SKILL.md`), substituted at install exactly like
-`[ABSOLUTE PATH]`; where the harness cannot run a script, drop the
-paragraph and keep the rest — the inline id snippet in SKILL.md is then
-the write path.
+`[ABSOLUTE PATH]`; where the harness cannot run a script, drop the two
+script paragraphs and keep the rest — the inline id snippet in SKILL.md is
+then the write path, and the `find … grep` above is the lookup, with its
+checkpoint line written by hand in the same batch.
 
 ### Anchoring the workspace
 
@@ -701,6 +710,19 @@ or intermittently, so the first batch carries the probe alone and the
 skills load a batch later. The review's activation regression pass checks
 for it (`weekly-review.md`, Step 1).
 
+**A deferred probe tool moves the probe to batch 2.** In a cloud session
+bridged to the user's computer, the device tools may still be connecting
+at turn start and arrive deferred (name only, schema not loaded), so the
+probe cannot ride in batch 1. Batch 1 then carries the deferred-tool load
+together with the session-start skill loads; batch 2 carries the probe,
+the session-start scan and one `skill-load.sh` call per skill loaded in
+batch 1 — the one recorded exception to the lookup riding in its load's
+batch, because the script runs through the same deferred tool. Record the split in the start-up lines ("probe in batch 2: device
+tool deferred"), so a review reading the transcript sees an environmental
+order, not a skipped rule. The failure shape: a rule that names batch 1's
+content cannot be met when one of its tools does not exist yet, and an
+unrecorded workaround reads the same as a violation.
+
 ### Install-layout hazards — three ways a skill silently stops existing
 
 Each of these leaves no error. The skill simply stops being offered, or an
@@ -713,7 +735,7 @@ directory and looks for `<entry>/SKILL.md`. There is no recursive lookup. On
 a library of any size the natural organising instinct is to group skills into
 category folders — `skills/seo/`, `skills/clients/`, `skills/writing/` — and
 doing so makes **every skill inside them cease to exist**: no error, no
-warning, no change in behaviour except that the skills stop being offered.
+notice, no change in behaviour except that the skills stop being offered.
 There is nothing to debug, because "not found" has no error to report. The
 layout is not merely the happy path; it is the rule, and it does not travel
 with the maintainer who reorganises six months later. Keep every skill
@@ -965,7 +987,7 @@ files.
 with a BOM (`Set-Content -Encoding UTF8`, `Out-File -Encoding utf8`).
 Every header reader tests line 1 for `---`, so an entry written that way
 drops out of the session-start scan — `parsed` one below `files`, with no
-warning while other headers parse — and the archival sweep never moves
+notice while other headers parse — and the archival sweep never moves
 it. Write entries with the editing tool or the helper script; in
 PowerShell 7, `-Encoding utf8NoBOM`.
 
@@ -1254,8 +1276,8 @@ This skill consists of `SKILL.md`, the reference files it lists
 (`weekly-review.md`, `skill-authoring.md`, `environments.md`,
 `observation-log.md`, `signals.md`, `migration.md`,
 `starter-principles.md`) and `scripts/migrate-log.py`,
-`scripts/new-observation.sh`, `scripts/session-start-scan.sh` and
-`scripts/validate-skill-bundle.py`. If a referenced
+`scripts/new-observation.sh`, `scripts/session-start-scan.sh`,
+`scripts/skill-load.sh` and `scripts/validate-skill-bundle.py`. If a referenced
 file is missing, the install is
 incomplete: proceed using the rules in `SKILL.md`, tell the user which
 files are missing, and point them to the full bundle at the canonical

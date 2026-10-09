@@ -262,7 +262,7 @@ for one skill rarely share a name.
 **Check for a restatement before writing.** Before creating the file, list
 the open observations that name the same target skill (the scan at session
 start already holds their titles; otherwise `find observation-log -name
-'*.md' -exec grep -l "skill:.*<skill>" {} +`) and read those titles. If the
+'*.md' -exec grep -l "skill:.*<bare-name>" {} +`) and read those titles. If the
 finding is the same one restated — the same rule, the same failure shape, a
 different example — extend the existing entry instead: append the new
 instance to its body, add the session to `session_context`, widen `title:`
@@ -271,8 +271,8 @@ roughly forty of ninety-one open entries were one finding restated), and a
 near-duplicate costs a capture every session and a triage every review.
 
 **Validate the target at write time.** `skill:` names a skill that exists
-now and performs the operation the Issue describes, written as the skill
-listing shows it (a plugin skill as `plugin:name`, never bare). If the
+now and performs the operation the Issue describes, written as its bare
+name (`plugin:name` only where two skills share it). If the
 right home is not a skill — an instructions file, a memory note, the
 register a routine reads — put that path in `target_file:`, not the
 nearest skill; a skill not yet built goes in `proposes_skill:`.
@@ -439,7 +439,7 @@ id: 0
 title: "Short descriptive title"
 status: open            # open | actioned | declined | superseded | parked
 type: open-source       # open-source | internal
-skill: [skill-a, "plugin:skill-b"]  # existing skills this improves —
+skill: [skill-a, skill-b]        # existing skills this improves —
                                  # always a list, first entry primary, may be
                                  # empty: []; quote an entry holding a colon
 proposes_skill: []               # new skills this argues for, by working
@@ -459,7 +459,7 @@ session_context: "what task was being worked on"
 parked_until:           # MANDATORY when status is parked, empty otherwise:
                         #   one line naming the condition that unparks it
 resolved:               # date resolved; leave empty while OPEN
-resolution:             # what was done — set only when actioned/declined
+resolution:             # what was done — set only when actioned/declined/superseded
 reference:              # optional — path to saved session-local evidence
 commands_verified:      # MANDATORY when the body quotes a command — each
                         #   `run` with its result, or `NOT RUN` with why; else none
