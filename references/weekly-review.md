@@ -651,8 +651,15 @@ other file is compared literally:
 
 ```bash
 fm=$'1,/^---$/{/^(name|description):[[:space:]]*".*"[[:space:]]*$/{s/:[[:space:]]*"/: /;s/"[[:space:]]*$//;s/\\\\"/"/g;s/\\\\\\\\/\\\\/g;};/^(name|description):[[:space:]]*\'.*\'[[:space:]]*$/{s/:[[:space:]]*\'/: /;s/\'[[:space:]]*$//;s/\'\'/\'/g;};}'
-diff <(sed -E "$fm" "$live/SKILL.md") <(sed -E "$fm" "$staged/SKILL.md") && diff -rq -x SKILL.md "$live" "$staged"   # bash; both silent = (a)
+norm() { sed -E "$fm" "$1" > "$2" && [ -s "$2" ]; }
+a=$(mktemp) && b=$(mktemp) && norm "$live/SKILL.md" "$a" && norm "$staged/SKILL.md" "$b" && diff "$a" "$b" && diff -rq -x SKILL.md "$live" "$staged"   # bash; exit 0 and silent = (a)
 ```
+
+A failed normalisation is a gate error, never a match: `sed` that cannot
+parse the expression writes nothing, and two empty streams compare equal,
+so the command normalises into temporary files and refuses an empty
+result. If `norm` fails, compare `SKILL.md` literally and expect the
+quoting-only lines to differ.
 
 This skill owns that command: any other skill that compares installed
 against staged copies quotes it verbatim and names this section as its
