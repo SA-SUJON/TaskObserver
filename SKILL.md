@@ -478,7 +478,7 @@ section or rule; for new skills, scope and key components.]
 colon.** `title`, `siblings_checked`, `area`, `session_context`,
 `resolution`, `parked_until` and `reference` carry free text, and free
 text contains `: ` as the common case; unquoted, that is invalid YAML —
-the scan notices nothing, every consumer that PARSES the header throws.
+the scan flags `key: a: b` as suspect; every consumer that PARSES it throws.
 A plugin-scoped name in a `[]` list (`[plugin:name]`) loads under one
 YAML parser and fails under another: quote it (`"…"`, inner `"` as `\"`);
 bare kebab-case names, dates and status words stay bare. Load

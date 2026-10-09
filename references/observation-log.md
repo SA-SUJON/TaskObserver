@@ -243,7 +243,10 @@ before the value, and it never treats a value opening with `{` or `#`
 as prose, which is what kept the template's own `reference:` comment
 line from being flagged. It is a floor, not a parse: a `[…]` list is
 checked only for a colon in an unquoted entry, a `{…}` mapping not at all,
-and a plain value followed by a `# comment: x` still counts. Re-verify by running a real YAML parse over the
+and a plain value followed by a `# comment: x` still counts. It also misses an unterminated quote, a tab in
+place of the space after a colon, a value ending in a colon or opening
+with `: `, a `: ` on a continuation line, a key outside `[a-z_]+`, and an
+empty value under a typed tag (`!!int`). Re-verify by running a real YAML parse over the
 frontmatter of every file, not by re-reading the template.
 
 The typographic quote is the other common break, and it is quieter. A
