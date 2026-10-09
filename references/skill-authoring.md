@@ -1286,6 +1286,11 @@ caught only by a test built to break it.
    directory and asserts that the default location was not touched: a
    subcommand that re-declares a global option can clobber it, and the
    smoke test then writes into the real home folder.
+5. A mutation run first proves the baseline green with the harness's own
+   command, and each test asserts which guard rejected the input, not
+   only that something did. A mutant that dies by an exception or an
+   import error is investigated, not counted as killed; a surviving
+   mutant means harden the fixture or delete the redundant condition.
 
 ## Runtime prerequisites — declare what the skill needs to be able to run
 
