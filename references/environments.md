@@ -882,6 +882,11 @@ What follows from that:
   case the wall was the permission mode rather than a policy: once the user
   switched out of auto mode, the hook tier installed with no friction at
   all. Try this before handing the block over for pasting.
+- **The objection follows the content, not the file.** A documentation
+  page that quotes the activation text can be refused on the same grounds
+  as the config edit. Report the setup as incomplete while either the
+  config or its write-up has not landed, and do not reword either to get
+  past the classifier.
 
 **The ladder is not monotonic.** Tier 4 — the session-start hook, which this
 file elsewhere calls the only enforced option — can be blocked *harder* than
