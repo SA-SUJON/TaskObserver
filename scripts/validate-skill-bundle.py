@@ -357,10 +357,12 @@ def check_reference_indexes(skill_dir, fails):
         rows = []
         for p in sorted(refs.glob("*.md")):
             n = len(p.read_text(encoding="utf-8").splitlines())
-            rows.append((p.name, n, len(triggers.get(p.name, ()))))
-        worst = max((t for _, _, t in rows), default=0)
-        print("reference shape (lines / distinct load triggers; not gated): "
-              + ", ".join(f"{n}={ln}/{t}" for n, ln, t in rows))
+            t = triggers.get(p.name)
+            rows.append((p.name, n, len(t) if t is not None else None))
+        worst = max((t for _, _, t in rows if t is not None), default=0)
+        print("reference shape (lines / distinct load triggers; not gated; "
+              "n/a = no pointer naming a section): "
+              + ", ".join(f"{n}={ln}/{'n/a' if t is None else t}" for n, ln, t in rows))
         if worst >= 10:
             print(f"note: one reference file carries {worst} distinct load triggers — "
                   f"split by episode is indicated when this grows; size is not the signal")
