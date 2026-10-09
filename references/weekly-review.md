@@ -1376,7 +1376,9 @@ required behaviour and verification step.
 **Scaling note — fan out when the apply-phase is large.** When the
 apply-phase spans more than ~3 skills or ~10 observations, delegate Step 5
 to parallel subagents clustered by skill rather than applying everything
-in the main session. Brief each subagent with: the observation ids (files) to
+in the main session. Count partitions, not items: a batch whose edits all
+land in one file has no partition and is applied inline; the observation
+count is then a context-budget signal, and the merge-time checks still run. Brief each subagent with: the observation ids (files) to
 read, the live-mount path, the staging path, the seeding sequence **as the
 verbatim snippet from the Step 5 block above** (never described in prose —
 its two failure modes are both reconstruction errors), the integration logic
