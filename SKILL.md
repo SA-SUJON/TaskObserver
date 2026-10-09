@@ -200,8 +200,8 @@ skill" (some upload paths keep only `SKILL.md`); its episodes do not run.
 6. **Targets and staged work.** Resolve each distinct `skill:` value in
    the scanned frontmatter against the installed skill set and mention, in
    one line, any that no longer resolve — and any that resolve but cannot
-   run, because presence in a listing is not capability (`references/skill-
-   authoring.md`, "Runtime prerequisites"). A deleted skill accumulates
+   run, because presence in a listing is not capability
+   (`references/skill-authoring.md`, "Runtime prerequisites"). A deleted skill accumulates
    observations unnoticed; a dead one more so. Say what you resolved against
    (this checkout, this install): an unresolved target is a fact about where
    you looked, not about the world.
