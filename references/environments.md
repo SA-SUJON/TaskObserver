@@ -470,10 +470,20 @@ last=$(cat "$d/last-review-date.txt" 2>/dev/null || echo never)
 msg="Invoke the task-observer skill before the first tool call. Observation files are created only by scripts/new-observation.sh in the skill directory, never by copying a header."
 if [ "$open" -gt 0 ]; then
   msg="$msg $open open observations; last review: $last."
-  case "$last" in (never) msg="$msg Offer the review." ;; esac
+  cutoff=$(date -d '7 days ago' +%F 2>/dev/null || date -v-7d +%F)   # GNU, then BSD/macOS
+  case "$last" in
+    (never) msg="$msg Offer the review." ;;
+    (*) [ "$(printf '%s\n%s\n' "$last" "$cutoff" | sort | head -1)" = "$last" ] && msg="$msg Offer the review." ;;
+  esac
 fi
 printf '{"hookSpecificOutput":{"hookEventName":"SessionStart","additionalContext":"%s"}}\n' "$msg"
 ```
+
+On native Windows, Claude Code runs hook commands through Git Bash, where
+a bare `bash` or `python` can resolve to WSL's `System32\bash.exe` or the
+Microsoft Store stub under `WindowsApps`, and neither runs the hook.
+Register the hook with the interpreter's full path (for Python, `py -0p`
+lists the real installs; skip any `WindowsApps` path).
 
 The count is of files whose `status` field reads `open` — not of files
 in the directory. Resolved entries deliberately stay in `observation-log/`
