@@ -761,6 +761,11 @@ def check_repo_versions(repo_dir, fails):
     Deliberately NOT a site: `marketplace.json` has no `version` field. The
     plugin's own manifest wins where both are set, so leaving it out removes
     a copy rather than synchronising one.
+
+    plugin.json also carries a `description` (and `keywords`) written for
+    discovery, mirrored in the marketplace entry, because that entry is what a
+    browser sees before install. It is deliberately not the SKILL.md
+    description: that one is the invocation trigger, read by the loader.
     """
     import json
     repo_dir = pathlib.Path(repo_dir)
@@ -779,23 +784,14 @@ def check_repo_versions(repo_dir, fails):
     name = str(json.loads(canonical_path.read_text(encoding="utf-8")).get("name") or "").strip()
     if not NAME_RE.match(name):
         fails.append(f"repo: .claude-plugin/plugin.json `name` not kebab-case: {name!r}")
-    if "description" in json.loads(canonical_path.read_text(encoding="utf-8")):
+    desc = str(json.loads(canonical_path.read_text(encoding="utf-8")).get("description") or "").strip()
+    if not desc:
         fails.append(
-            "repo: .claude-plugin/plugin.json carries `description`. Remove it — "
-            "the skill's own frontmatter description drives invocation, and a "
-            "second copy here is unread by the loader and drifts from the first.")
+            "repo: .claude-plugin/plugin.json has no `description`. Add one written for "
+            "discovery: `/plugin` search, the pre-install listing and plugin directories "
+            "read it. It is not compared with the SKILL.md description, which is the "
+            "invocation trigger and has a different reader; re-read both at every release.")
     print(f"repo: canonical version {canonical}")
-    for rel in (".tessl-plugin/plugin.json",):
-        p = repo_dir / rel
-        if not p.is_file():
-            continue
-        try:
-            v = str(json.loads(p.read_text(encoding="utf-8")).get("version", "")).strip()
-        except Exception as e:
-            fails.append(f"repo: {rel} does not parse: {e}")
-            continue
-        if v != canonical:
-            fails.append(f"repo: {rel} version {v!r} != canonical {canonical!r}")
     # The skill's own frontmatter carries the version too, so a session can
     # name what it loaded without the repo-only manifest (which never ships
     # inside a bundle). It is a copy of the canonical number like the others.
@@ -822,6 +818,16 @@ def check_repo_versions(repo_dir, fails):
                 f"repo: marketplace.json carries a version ({', '.join(stray)}). "
                 f"Remove it — plugin.json wins where both are set, so this is a "
                 f"copy to keep in sync for no benefit.")
+        # A marketplace entry with a non-relative source is all a browser sees
+        # before install, so it mirrors plugin.json's description and keywords.
+        pj = json.loads(canonical_path.read_text(encoding="utf-8"))
+        for i, e in enumerate(data.get("plugins", [])):
+            if not isinstance(e, dict) or e.get("name") != pj.get("name"):
+                continue
+            if str(e.get("description") or "").strip() != desc:
+                fails.append(f"repo: marketplace.json plugins[{i}].description differs from plugin.json's")
+            if e.get("keywords", []) != pj.get("keywords", []):
+                fails.append(f"repo: marketplace.json plugins[{i}].keywords differ from plugin.json's")
 
 
 LIST_ITEM_RE = re.compile(r"^(\s*)([-*+]|\d+[.)])\s+\S")
