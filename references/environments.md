@@ -320,7 +320,11 @@ system already reads or writes state, that location is authoritative
 and the documented defaults are the fallback; an existence probe over
 the defaults alone reports "not found" for every install that deviated
 from them. Never create a workspace while a hook or config names a
-different root: reconcile first. If one exists, adopt it, or
+different root: reconcile first. Every always-loaded instruction file is
+a pin source (a CLAUDE.md and an AGENTS.md forked for another agent tool
+are two): grep each for the workspace root. Two distinct roots are a
+fork, not a variant: stop and reconcile before writing, and keep the pin
+in one file both tools load. If one exists, adopt it, or
 consolidate deliberately with the user. A fresh
 empty log beside a populated one is a silent fork: both grow
 independently, ids collide, and each session sees only half the history.
