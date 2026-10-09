@@ -236,17 +236,17 @@ and must not be split to satisfy a size rule. One measurement of this
 skill's own bundle (lines / distinct section-named load triggers),
 copied from the validator's `reference shape` line — refresh it from
 that line, never by hand. The validator counts pointers that name a
-section, so a file the core cites only by filename reads 0:
+section, so a file the core cites only by filename reads n/a:
 
 | file | lines | triggers |
 |---|---:|---:|
-| `weekly-review.md` | 2,089 | 1 |
-| `observation-log.md` | 1,718 | **18** |
-| `environments.md` | 1,701 | 6 |
-| `skill-authoring.md` | 1,411 | 0 |
-| `starter-principles.md` | 480 | 0 |
-| `signals.md` | 228 | 4 |
-| `migration.md` | 226 | 0 |
+| `weekly-review.md` | 1,992 | 1 |
+| `observation-log.md` | 1,714 | **18** |
+| `environments.md` | 1,432 | 5 |
+| `skill-authoring.md` | 1,400 | n/a |
+| `starter-principles.md` | 444 | n/a |
+| `signals.md` | 232 | 4 |
+| `migration.md` | 226 | n/a |
 
 A line ceiling flags the largest file first — the one that needs no
 change, since a review loads it whole as a unit — and cannot tell it
