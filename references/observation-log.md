@@ -323,6 +323,13 @@ The same applies to any vehicle standing in for a result: a ticket
 resolved, a build green, a message replied to. Park on what you actually
 need to be true.
 
+A condition phrased as text in the target is checked by a phrase search,
+and hard-wrapped Markdown breaks a line-oriented one: the phrase spans a
+line break and `grep` reports no match. Search within a Markdown block with
+whitespace normalised (join the lines of a paragraph, collapse runs of
+spaces), and test the search once against a known wrapped hit and a known
+cross-block non-match before trusting a "not present".
+
 For a skill the user does not maintain, the target artefact is the LOCAL
 INSTALL, not the upstream tree. An upstream report is not resolved when it
 is accepted, merged or released — none of those changes the copy that is

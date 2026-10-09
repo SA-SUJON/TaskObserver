@@ -842,7 +842,10 @@ entries target the same member. Then, before anything is presented:
   already-applied / partially-applied / outstanding classification here
   too, before anything is presented. In an interactive review the user
   approves at this step, so Step 5 never sees an entry the user was asked
-  to approve twice. Run it against the file the observation actually
+  to approve twice. A phrase search over hard-wrapped Markdown matches
+  within a block with whitespace normalised, never line by line
+  (`observation-log.md`, "A park condition names the result, never your
+  own vehicle"). Run it against the file the observation actually
   targets — its `skill:` entries, its `target_file:` entries, the code or
   register it names — never a proxy such as a routine's own `SKILL.md`
   when the entry asks for the register that routine declares. Close what
