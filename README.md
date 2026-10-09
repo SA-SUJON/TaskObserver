@@ -4,17 +4,18 @@
 
 **Why "One Skill to Rule Them All"?** The slogan doesn't claim this is the best skill. It couldn't be: a meta-skill is useless without the skills it watches over. It describes what Task Observer does: keep an eye on how all your other skills are working and suggest improvements. You decide which changes are installed.
 
-This meta-skill has **logged over 1,600 observations across my 81 skills**, most of which were turned into skill improvements. The majority of my 81 skills were themselves created based on observations by the meta-skill.
+This meta-skill has **logged over 1,800 observations across my 81 skills**, most of which were turned into skill improvements. The majority of my 81 skills were themselves created based on observations by the meta-skill.
 
-The current version of task-observer also includes improvements from 69 different contributors, each credited as an author or co-author in the commit history, and its commits close 99 issues and pull requests. Without these contributions, the project wouldn't be half as good as it is today.
+The current version of task-observer also includes improvements from over 80 contributors, each credited as an author or co-author in the commit history, and over 200 issues and pull requests have been closed. Without these contributions, the project wouldn't be half as good as it is today.
 
 This meta-skill is a practical application of the [Augmented Expertise](https://www.rebelytics.com/augmented-expertise/) methodology, an AI framework for knowledge workers. However, users have reported successful integrations into their Hermes and Openclaw setups, so it works equally well with autonomous agents.
 
 ## Quick install
 
-1. **From a terminal (Vercel's skills CLI, needs Node.js):** `npx skills add rebelytics/one-skill-to-rule-them-all --skill task-observer` — add `-g` to install it for all your projects.
-2. **In the Claude apps (web, desktop, mobile, Cowork):** upload the `.skill` bundle from the latest release via Settings → Customize.
-3. **Then activate it:** add the activation instruction from `references/environments.md` to your CLAUDE.md (or your platform's equivalent). Installing alone is not enough, because description matching under-triggers; see "Check that it actually runs" below.
+1. **Install it, by either route:**
+   - **From a terminal (Vercel's skills CLI, needs Node.js):** `npx skills add rebelytics/one-skill-to-rule-them-all --skill task-observer` — add `-g` to install it for all your projects. This is the most-used route: the skills.sh listing reports over 10,000 installs, a lower bound because the CLI's install telemetry is opt-out.
+   - **In the Claude apps (web, desktop, mobile, Cowork):** upload the `.skill` bundle from the latest release via Settings → Customize.
+2. **Activate it, whichever route you used:** add the activation instruction from `references/environments.md` to your CLAUDE.md (or your platform's equivalent), then check that it runs (see "Check that it actually runs" below). Installing alone is not enough, because description matching under-triggers.
 
 ## Why you should use task-observer
 
@@ -71,17 +72,17 @@ One honest boundary: the formal observation log and review cycle pay off most as
 
 ## Installation
 
-The skill is a small bundle: `SKILL.md`, the files in `references/` that are loaded on demand (this keeps the always-loaded part lean), and four helper scripts in `scripts/`. Installing only SKILL.md works, but runs degraded and isn't recommended — the skill will tell you which files are missing.
+The skill is a small bundle: `SKILL.md`, the files in `references/` that are loaded on demand (this keeps the always-loaded part lean), and five helper scripts in `scripts/`. Installing only SKILL.md works, but runs degraded and isn't recommended — the skill will tell you which files are missing.
 
 **Get the files:** download the `.skill` bundle attached to the latest release, or download the repo as a ZIP (Code → Download ZIP) / clone it and keep `SKILL.md`, `references/` and `scripts/` together.
 
-**Claude (web interface, desktop app, mobile app, Cowork):** upload the `.skill` bundle via Settings → Customize (or put `SKILL.md`, `references/` and `scripts/` into one folder and zip that folder). The skill is then available in all chats and in Cowork tasks.
+**Claude (web interface, desktop app, mobile app, Cowork):** without the release bundle, put `SKILL.md`, `references/` and `scripts/` into one folder, zip that folder and upload it via Settings → Customize. The skill is then available in all chats and in Cowork tasks.
 
 **Claude Code:** place the folder at `.claude/skills/task-observer/` (project-level) or in your user-level skills directory, preserving the `references/` and `scripts/` subfolders.
 
 **Other systems:** keep the folder structure intact wherever your platform expects skills, and let your AI guide you (see "How it works" above).
 
-**From the command line (Vercel's skills CLI):** `npx skills add rebelytics/one-skill-to-rule-them-all --skill task-observer`. This is the most-used install route — the skills.sh listing reports over 9,000 installs, a lower bound because the CLI's install telemetry is opt-out, and it carries independent security audits from Gen Agent Trust Hub, Socket and Snyk.
+**Vercel's skills CLI:** the skills.sh listing carries independent security audits from Gen Agent Trust Hub, Socket and Snyk.
 
 **Check that it actually runs.** Installing the files is not the same as activating the skill: description matching alone under-triggers, so add the activation instruction from `references/environments.md` to your CLAUDE.md (or your platform's equivalent) or install the session-start hook. Then verify in a *new* session — the session you install in cannot prove it — that the skill is invoked before the first tool call. The external tell if you skipped this: if `skill-observations/observation-log/` doesn't exist after a few sessions of real work, activation never happened.
 
@@ -154,6 +155,7 @@ task-observer is indexed in these community lists and skill directories:
 - [SkillFoxx](https://skillfoxx.ru/en/skills/task-observer-one-skill-to-rule-them-all)
 - [Zread](https://zread.ai/rebelytics/one-skill-to-rule-them-all)
 - [TypingMind](https://www.typingmind.com/skills/rebelytics-task-observer)
+- [karanb192 / awesome-claude-skills](https://github.com/karanb192/awesome-claude-skills)
 
 It is also redistributed, unmodified and under CC BY 4.0, in [iamneilroberts/claude-skills](https://github.com/iamneilroberts/claude-skills).
 
