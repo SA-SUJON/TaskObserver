@@ -732,6 +732,16 @@ def selftest():
             bad += not ok; total += 1
             print(f"{'ok  ' if ok else 'FAIL'} scan script: {name}"
                   + ("" if ok else f" (exit {rc}, {ck} checkpoint lines)"))
+    for eol in ("\n", "\r\n"):    # the name-quoting rewrite keeps the file's line endings
+        with tempfile.TemporaryDirectory() as td:
+            p = pathlib.Path(td) / "SKILL.md"
+            p.write_bytes(eol.join(["---", "name: x-y", "description: d", "---", "body", ""]).encode())
+            quoted = quote_frontmatter_name(p)
+            out = p.read_bytes()
+            ok = quoted and b'name: "x-y"' in out and \
+                (out.count(b"\r\n") == 5 if eol == "\r\n" else b"\r" not in out)
+        bad += not ok; total += 1
+        print(f"{'ok  ' if ok else 'FAIL'} name quoting keeps {'CRLF' if eol == chr(13) + chr(10) else 'LF'} endings")
     print(f"selftest: {total - bad}/{total} passed")
     return 1 if bad else 0
 
@@ -869,7 +879,9 @@ def quote_frontmatter_name(skill_md):
     comparisons still normalise the line as the backstop. Runs only on the
     pack path, after every check passed, so the value is known kebab-case.
     """
-    text = skill_md.read_text(encoding="utf-8")
+    raw = skill_md.read_bytes().decode("utf-8")
+    crlf = "\r\n" in raw
+    text = raw.replace("\r\n", "\n")
     m = re.match(r"^---\n(.*?)\n---\n", text, re.S)
     if not m:
         return False
@@ -880,7 +892,8 @@ def quote_frontmatter_name(skill_md):
     end = m.start(1) + nm.end()
     old = text[start:end]
     new = f'name: "{nm.group(1)}"'
-    skill_md.write_text(text[:start] + new + text[end:], encoding="utf-8")
+    out = text[:start] + new + text[end:]
+    skill_md.write_bytes((out.replace("\n", "\r\n") if crlf else out).encode("utf-8"))
     print(f"pack: quoted the frontmatter name in {skill_md} ({old!r} -> {new!r}); "
           f"the packed copy carries the quoted form")
     return True
