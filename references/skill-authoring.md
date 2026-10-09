@@ -969,6 +969,15 @@ re-check exists, do not record the value — record how to obtain it.
    a live violation of it, in a skill whose rules were under active
    rewrite, found only because the prompt happened to be opened for an
    unrelated reason).
+
+   **A rename is a migration, not an edit.** Where skills are hosted by an
+   account or an app, a skill under a new name is a new skill. Before the
+   rename, grep the old name across the `skill:` fields of the observation
+   log (active and archive), `skill-families.md`, the cross-cutting
+   principles, scheduled-task prompts, sibling paths (`../<old-name>/`),
+   copied script headers and memory notes. Upload the renamed skill, verify
+   that it loads, deactivate the old one in the same step, then update
+   every surface the grep found. Deleting the old skill is the user's call.
 9. **Inserting into an ordered structure is a splice, not a replacement.**
    String replacement edits text, but a list, a table, a `## Contents`
    index, a frontmatter block or a numbered sequence of steps is
